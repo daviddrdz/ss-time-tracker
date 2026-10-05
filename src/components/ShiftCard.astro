@@ -1,0 +1,44 @@
+---
+
+---
+
+<section class="mt-4">
+    <h2 class="mb-3 text-xl font-bold">Turno de hoy</h2>
+
+    <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-6">
+        <div>
+            <p class="text-sm text-zinc-400">Entrada sugerida</p>
+            <span class="text-4xl font-bold">08:00</span>
+        </div>
+
+        <button
+            id="register-entry"
+            class="rounded-lg bg-white px-4 py-2 font-medium text-zinc-900 hover:bg-zinc-200"
+        >
+            Registrar entrada
+        </button>
+    </div>
+</section>
+
+<script>
+    const button = document.querySelector("#register-entry");
+
+    button?.addEventListener("click", () => {
+        const now = new Date();
+        const date = now.toISOString().split("T")[0];
+        const time = now.toLocaleTimeString("es-MX", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+        });
+
+        const shift = {
+            id: Date.now().toString(),
+            date,
+            start: time,
+            end: null
+        }
+
+        console.log(shift);
+    });
+</script>
