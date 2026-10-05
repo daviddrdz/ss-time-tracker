@@ -1,43 +1,45 @@
-# Astro Starter Kit: Minimal
+# SS Time Tracker (beta)
 
-```sh
-pnpm create astro@latest -- --template minimal
-```
+A lightweight, fast, and modern Progressive Web App (PWA) designed to track, log, and manage your social service hours.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Key Features
 
-## 🚀 Project Structure
+* **Offline Support:** Works seamlessly without an internet connection thanks to PWA capabilities.
 
-Inside of your Astro project, you'll see the following folders and files:
+* **Time Tracking:** Simple check-in, check-out, and total accumulated hour logging.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+* **Clean Interface:** Built for a fast, responsive experience across mobile and desktop devices.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## 🛠️ Prerequisites
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Make sure you have the following installed on your machine:
 
-Any static assets, like images, can be placed in the `public/` directory.
+* [Node.js](https://nodejs.org/) (LTS version recommended)
 
-## 🧞 Commands
+* [pnpm](https://pnpm.io/) (Fast, disk space efficient package manager)
 
-All commands are run from the root of the project, from a terminal:
+## ⚙️ Setup and Local Development
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+Follow these steps to run the project locally:
 
-## 👀 Want to learn more?
+1. **Clone the repository:**
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+   ```bash
+   git clone https://github.com/your-username/ss-time-tracker.git
+   cd ss-time-tracker
+   ```
+
+2. **Install dependencies:**
+
+   ```bash
+   pnpm install
+   ```
+
+3. **Run the development server:**
+
+   ```bash
+   pnpm dev
+   ```
+
+4. Open your browser and navigate to the local URL shown in your terminal (usually `http://localhost:4321`).
+
