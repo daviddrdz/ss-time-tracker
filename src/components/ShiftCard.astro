@@ -22,23 +22,52 @@
 
 <script>
     const button = document.querySelector("#register-entry");
+    const storedShifts = localStorage.getItem("shifts");
+    const shifts = storedShifts ? JSON.parse(storedShifts) : [];
+
+    const getActiveShift = () => shifts.find(shift => shift.end === null);
+
+    const updateButton = () => {
+        if(button) {
+            if(getActiveShift()) {
+                button.textContent = "Registrar salida";
+            } else {
+                button.textContent = "Registrar entrada";
+            }
+        }
+    }
+
+    updateButton();
 
     button?.addEventListener("click", () => {
         const now = new Date();
-        const date = now.toISOString().split("T")[0];
+        const date = [
+            now.getFullYear(),
+            String(now.getMonth() + 1).padStart(2, "0"),
+            String(now.getDate()).padStart(2, "0")
+        ].join("-");
         const time = now.toLocaleTimeString("es-MX", {
             hour: "2-digit",
             minute: "2-digit",
             hour12: false
         });
 
-        const shift = {
-            id: Date.now().toString(),
-            date,
-            start: time,
-            end: null
+        const activeShift = getActiveShift();
+
+        if (activeShift) {
+            activeShift.end = time;
+        } else {
+            const shift = {
+                id: Date.now().toString(),
+                date,
+                start: time,
+                end: null
+            }
+            shifts.push(shift);
         }
 
-        console.log(shift);
+        localStorage.setItem("shifts", JSON.stringify(shifts));
+        window.dispatchEvent(new Event("shifts-updated"));
+        updateButton();
     });
 </script>
