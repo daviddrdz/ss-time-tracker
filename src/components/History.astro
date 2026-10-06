@@ -10,6 +10,25 @@
 
 <script>
     const historyList = document.querySelector("#history-list");
+    const MIN_FOR_HR = 31;
+
+    const getDuration = (start, end) => {
+        const [startHrs, startMin] = start.split(":").map(Number);
+        const [endHrs, endMin] = end.split(":").map(Number);
+
+        const startTime = (startHrs * 60) + startMin;
+        const endTime = (endHrs * 60) + endMin;
+
+        const duration = endTime - startTime;
+
+        const durationHrs = Math.floor(duration / 60);
+        const durationMin = duration % 60;
+
+        return {
+            hrs: durationHrs,
+            min: durationMin
+        }
+    }
 
     const updateHistory = () => {
         const storedShifts = localStorage.getItem("shifts");
@@ -17,21 +36,42 @@
 
         if(historyList) historyList.innerHTML = "";
 
-        shifts.forEach(shift => {
+        shifts.toReversed().forEach(shift => {
             const row = document.createElement("div");
             const end = shift.end ?? "En curso";
+            const duration = shift.end ? getDuration(shift.start, shift.end) : null;
+
             const [year, month, day] = shift.date.split("-");
             const date = new Intl.DateTimeFormat("en-GB", {
                 day: "2-digit",
                 month: "short",
             }).format(new Date(year, month - 1, day));
-            row.className = "flex items-center justify-between p-4";
+
+            row.className = "flex items-center justify-between p-4 border-b border-zinc-800";
             row.innerHTML = `
                 <span class="font-medium">${date}</span>             
                 <span class="text-sm text-zinc-400">${shift.start} → ${end}</span>
+                <span class="font-medium">
+                    ${duration ? duration?.hrs + "h " + duration?.min + "m" : ""}
+                </span>
             `;
             historyList?.appendChild(row);
         });
+    }
+
+    const getTotalHrs = () => {
+        const storedShifts = localStorage.getItem("shifts");
+        const shifts = storedShifts ? JSON.parse(storedShifts) : []; 
+
+        let total = 0;
+
+        shifts.forEach(shift => {
+            const duration = shift.end ? getDuration(shift.start, shift.end) : null;
+            total = total + (duration ? duration.hrs : 0);
+            if(duration && duration.min >= MIN_FOR_HR) total++;
+        })
+
+        return total;
     }
 
     updateHistory();
