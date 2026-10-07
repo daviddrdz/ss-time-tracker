@@ -6,22 +6,26 @@
     <h2 class="mb-3 text-xl font-bold">Turno de hoy</h2>
 
     <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-6">
-        <div>
+        <div class="text-center">
             <p class="text-sm text-zinc-400">Entrada sugerida</p>
-            <span class="text-4xl font-bold">08:00</span>
+            <span id="suggested-hr" class="text-6xl font-bold">08:00</span>
         </div>
 
         <button
             id="register-entry"
-            class="rounded-lg bg-white px-4 py-2 font-medium text-zinc-900 hover:bg-zinc-200"
+            class="w-full rounded-lg bg-white px-4 py-2 font-medium text-zinc-900 hover:bg-zinc-200"
         >
             Registrar entrada
         </button>
+
     </div>
+
 </section>
 
 <script>
+    const suggestedTime = document.querySelector("#suggested-hr");
     const button = document.querySelector("#register-entry");
+
     const storedShifts = localStorage.getItem("shifts");
     const shifts = storedShifts ? JSON.parse(storedShifts) : [];
 

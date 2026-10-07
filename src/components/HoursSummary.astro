@@ -1,19 +1,42 @@
 ---
-const { completed, remaining } = Astro.props;
+
 ---
 
 <section class="mt-4">
     <h2 class="mb-3 text-xl font-bold">Horas</h2>
 
-    <div class="grid grid-cols-2 gap-4">
-        <div class="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+    <div class="mb-2 grid grid-cols-2 gap-4">
+        <div class="text-center rounded-xl border border-zinc-800 bg-zinc-900 p-6">
             <p class="text-sm text-zinc-400">Realizadas</p>
-            <span class="text-4xl font-bold">{completed}</span>
+            <span id="completed-hrs" class="text-4xl font-bold"></span>
         </div>
 
-        <div class="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+        <div class="text-center rounded-xl border border-zinc-800 bg-zinc-900 p-6">
             <p class="text-sm text-zinc-400">Restantes</p>
-            <span class="text-4xl font-bold">{remaining}</span>
+            <span id="remaining-hrs" class="text-4xl font-bold"></span>
         </div>
     </div>
+    <span id="total-hrs" class="text-sm text-zinc-400"></span>
 </section>
+
+<script>
+    import { getTotalHrs } from "../lib/shifts.js";
+    import { TOTAL_HRS } from "../config/service";
+
+    const completedHrs = document.querySelector("#completed-hrs");
+    const remainingHrs = document.querySelector("#remaining-hrs");
+    const totalHrs = document.querySelector("#total-hrs");
+
+    const updateSummary = () => {
+        const completed = getTotalHrs();
+        const remaining = TOTAL_HRS - completed;
+
+        if (completedHrs) completedHrs.textContent = completed + "h";
+        if (remainingHrs) remainingHrs.textContent = remaining + "h ";
+        if (totalHrs) totalHrs.textContent = `Total: ${TOTAL_HRS}h`;
+    }
+
+    updateSummary();
+
+    window.addEventListener("shifts-updated", updateSummary);
+</script>
