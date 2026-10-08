@@ -1,0 +1,33 @@
+---
+import "../styles/global.css";
+import Nav from "../components/Nav.astro";
+import CheckOutCalc from "../components/CheckOutCalc.astro";
+import TimeCalc from "../components/TimeCalc.astro";
+---
+
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Calculadora - Servicio Social</title>
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#09090b" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png" />
+    </head>
+
+    <body class="min-h-screen bg-zinc-950 text-white pt-[env(safe-area-inset-top)]">
+            <main class="mx-auto max-w-3xl p-6">
+            <Nav />
+
+            <div class="mb-8 mt-2 text-center">
+                <h1 class="text-3xl font-bold tracking-tight text-white">Calculadora</h1>
+            </div>
+
+            <CheckOutCalc />     
+
+            <TimeCalc />
+        </main>
+    </body>
+</html>

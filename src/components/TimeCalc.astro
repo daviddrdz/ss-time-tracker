@@ -1,0 +1,125 @@
+---
+---
+
+<section class="mt-8">
+    <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-8">
+        
+        <div>
+            <h2 class="text-xl font-bold">Proyección de término</h2>
+            <p class="text-sm text-zinc-400 mt-1">Calcula cuánto tiempo te tomará terminar</p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div class="flex flex-col gap-2">
+                <label for="proj-completed" class="text-sm text-zinc-400">Horas realizadas</label>
+                <input 
+                    type="number" 
+                    id="proj-completed" 
+                    placeholder="Ej. 120"
+                    class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
+                />
+            </div>
+            
+            <div class="flex flex-col gap-2">
+                <label for="proj-total" class="text-sm text-zinc-400">Total de horas a cumplir</label>
+                <input 
+                    type="number" 
+                    id="proj-total" 
+                    placeholder="Ej. 480"
+                    class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
+                />
+            </div>
+            
+            <div class="flex flex-col gap-2">
+                <label for="proj-hrs-day" class="text-sm text-zinc-400">Horas por turno (al día)</label>
+                <input 
+                    type="number" 
+                    id="proj-hrs-day" 
+                    placeholder="Ej. 4"
+                    class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
+                />
+            </div>
+            
+            <div class="flex flex-col gap-2">
+                <label for="proj-days-week" class="text-sm text-zinc-400">Días de asistencia a la semana</label>
+                <input 
+                    type="number" 
+                    id="proj-days-week" 
+                    placeholder="Ej. 5"
+                    class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
+                />
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <label for="proj-format" class="text-sm text-zinc-400">Formato de vista</label>
+            <select id="proj-format" class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white outline-none focus:border-zinc-500">
+                <option value="detailed">Todo junto (Meses, Semanas, Días)</option>
+                <option value="days">Solo días</option>
+                <option value="weeks">Solo semanas</option>
+                <option value="months">Solo meses</option>
+            </select>
+        </div>
+
+        <button
+            id="calc-remaining-time-btn"
+            class="w-full rounded-lg bg-white px-4 py-2 font-medium text-zinc-900 hover:bg-zinc-200"
+        >
+            Calcular
+        </button>
+
+        <div class="rounded-lg border border-zinc-800 bg-zinc-950/50 p-4 text-center">
+            <span id="proj-days-result" class="text-2xl font-bold text-white">--</span>
+        </div>
+
+
+    </div>
+</section>
+
+<script>
+    const completedInput = document.querySelector("#proj-completed") as HTMLInputElement;
+    const totalInput = document.querySelector("#proj-total") as HTMLInputElement;
+    const hrsDayInput = document.querySelector("#proj-hrs-day") as HTMLInputElement;
+    const daysWeekInput = document.querySelector("#proj-days-week") as HTMLInputElement;
+    const formatSelect = document.querySelector("#proj-format") as HTMLSelectElement;
+    
+    const daysResult = document.querySelector("#proj-days-result");
+    const calcRemainingTimeBtn = document.querySelector("#calc-remaining-time-btn");
+
+    const calculateProjection = () => {
+        const completed = Number(completedInput?.value);
+        const total = Number(totalInput?.value);
+        const hrsDay = Number(hrsDayInput?.value);
+        const daysWeek = Number(daysWeekInput?.value);
+        const format = formatSelect?.value || "detailed";
+
+        if (total > 0 && hrsDay > 0 && daysWeek > 0 && completed >= 0) {
+            const remainingHrs = Math.max(0, total - completed);
+            const totalDaysNeeded = Math.ceil(remainingHrs / hrsDay);
+
+            if (format === "days") {
+                if (daysResult) daysResult.textContent = `${totalDaysNeeded} días`;
+            } else if (format === "weeks") {
+                const w = (totalDaysNeeded / daysWeek).toFixed(1);
+                if (daysResult) daysResult.textContent = `${w} semanas`;
+            } else if (format === "months") {
+                const m = (totalDaysNeeded / (daysWeek * 4)).toFixed(1);
+                if (daysResult) daysResult.textContent = `${m} meses`;
+            } else {
+                const months = Math.floor(totalDaysNeeded / (daysWeek * 4));
+                const daysLeftAfterMonths = totalDaysNeeded % (daysWeek * 4);
+                
+                const weeks = Math.floor(daysLeftAfterMonths / daysWeek);
+                const days = daysLeftAfterMonths % daysWeek;
+
+                if (daysResult) {
+                    daysResult.textContent = `${months} meses, ${weeks} sem, ${days} días`;
+                }
+            }
+        } else {
+            if(daysResult) daysResult.textContent = "--";
+        }
+    };
+
+    calcRemainingTimeBtn?.addEventListener("click", calculateProjection);
+</script>
