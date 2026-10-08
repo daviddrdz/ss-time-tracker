@@ -1,6 +1,9 @@
+---
+import ShiftModal from "./ShiftModal.astro";
+---
+
 <section class="mt-4">
     <h2 class="mb-3 text-xl font-bold">Historial</h2>
-
     <div 
         id="history-list"
         class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900"
@@ -8,45 +11,10 @@
     </div>
 </section>
 
+<ShiftModal />
+
 <script>
-    import { getDuration } from "../lib/shifts.js";
-
-    const historyList = document.querySelector("#history-list");
-    const MIN_FOR_HR = 31;
-
-    const updateHistory = () => {
-        const storedShifts = localStorage.getItem("shifts");
-        const shifts = storedShifts ? JSON.parse(storedShifts) : []; 
-
-        if(historyList) historyList.innerHTML = "";
-
-        shifts.toReversed().forEach(shift => {
-            const row = document.createElement("div");
-            const end = shift.end ?? "En curso";
-            const duration = shift.end ? getDuration(shift.start, shift.end) : null;
-
-            const [year, month, day] = shift.date.split("-");
-            const date = new Intl.DateTimeFormat("en-GB", {
-                day: "2-digit",
-                month: "short",
-            }).format(new Date(year, month - 1, day));
-
-            row.className = "grid grid-cols-3 items-center p-4 border-b border-zinc-800";
-            row.innerHTML = `
-                <span class="font-medium text-left">${date}</span>             
-                <span class="text-sm text-zinc-400 text-center">${shift.start} → ${end}</span>
-                <span class="font-medium text-right">
-                    ${duration ? duration?.hrs + "h " + duration?.min + "m" : ""}
-                </span>
-            `;
-            historyList?.appendChild(row);
-        });
-    }
-
-    updateHistory();
-
-    window.addEventListener("shifts-updated", () => {
-        updateHistory();
-    })
-
+    import { initHistoryController } from "../lib/historyController.js";
+    
+    initHistoryController();
 </script>

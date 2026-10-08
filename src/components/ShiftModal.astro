@@ -1,0 +1,39 @@
+---
+---
+<dialog id="edit-modal" class="m-auto w-[90%] max-w-sm rounded-xl border border-zinc-800 bg-zinc-900 p-0 text-white shadow-2xl backdrop:bg-black/70 backdrop:backdrop-blur-sm">
+    <div class="p-6 space-y-4">
+        <h3 class="text-xl font-bold">Detalles del turno</h3>
+        
+        <input type="hidden" id="edit-id" />
+        
+        <div class="flex flex-col gap-2">
+            <label class="text-sm text-zinc-400">Fecha</label>
+            <input type="date" id="edit-date" class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500 [color-scheme:dark]" />
+        </div>
+        
+        <div class="flex flex-col gap-2">
+            <label class="text-sm text-zinc-400">Hora de entrada</label>
+            <input type="time" id="edit-start" class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500 [color-scheme:dark]" />
+        </div>
+        
+        <div class="flex flex-col gap-2">
+            <label class="text-sm text-zinc-400">Hora de salida</label>
+            <input type="time" id="edit-end" class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500 [color-scheme:dark]" />
+            <span class="text-xs text-zinc-500">Borra la hora si el turno sigue en curso.</span>
+        </div>
+        
+        <div class="mt-6 flex flex-col gap-3">
+            <div class="flex gap-3">
+                <button id="btn-cancel-edit" class="flex-1 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 font-medium text-white transition-colors hover:bg-zinc-700">
+                    Cerrar
+                </button>
+                <button id="btn-save-edit" class="flex-1 rounded-lg bg-white px-4 py-2 font-medium text-zinc-900 transition-colors hover:bg-zinc-200">
+                    Guardar
+                </button>
+            </div>
+            <button id="btn-delete-shift" class="w-full rounded-lg border border-red-900/50 bg-red-950/30 px-4 py-2 font-medium text-red-400 transition-colors hover:bg-red-900/40">
+                Eliminar turno
+            </button>
+        </div>
+    </div>
+</dialog>
