@@ -1,14 +1,48 @@
 ---
-
 ---
 
 <section class="mt-4">
     <h2 class="mb-3 text-xl font-bold">Turno de hoy</h2>
 
+
     <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-6">
-        <div class="text-center">
-            <p class="text-sm text-zinc-400">Entrada sugerida</p>
-            <span id="suggested-hr" class="text-6xl font-bold">08:00</span>
+
+        <div class="grid grid-cols-2 gap-4">
+
+            <div class="flex flex-col gap-2">
+                <label for="shift-hours" class="text-sm text-zinc-400">Horas de jornada</label>
+                <select
+                    id="shift-hours"
+                    class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 
+                            text-white outline-none focus:border-zinc-500"
+                >
+                    {
+                        Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
+                            <option value={num} selected={num === 4}>
+                                {num} {num === 1 ? 'hora' : 'horas'}
+                            </option>
+                        ))
+                    }
+                </select>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <span class="text-sm text-zinc-400">Tiempo restante</span>
+                <div class="flex h-10 w-full items-center justify-center rounded-lg border 
+                            border-zinc-700 bg-zinc-800 px-3 py-2 text-white">
+                    <span id="time-counter" class="font-mono text-base font-medium tracking-wide">
+                        00:00
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="rounded-lg border border-zinc-800 bg-zinc-950/50 p-4 text-center">
+            <p class="text-sm text-zinc-400">Hora de salida</p>
+                <span id="clock-out-time" class="text-6xl font-bold font-mono">
+                --:--
+            </span>
         </div>
 
         <button
@@ -23,17 +57,16 @@
 </section>
 
 <script>
-    const suggestedTime = document.querySelector("#suggested-hr");
+    import { getClockOutTime, getShifts, getActiveShift } from "../lib/shifts.js";
+
+    const clockOutTime = document.querySelector("#clock-out-time");
+    const shiftHours = document.querySelector("#shift-hours") as HTMLSelectElement;
     const button = document.querySelector("#register-entry");
-
-    const storedShifts = localStorage.getItem("shifts");
-    const shifts = storedShifts ? JSON.parse(storedShifts) : [];
-
-    const getActiveShift = () => shifts.find(shift => shift.end === null);
+    const timeCounter = document.querySelector("#time-counter");
 
     const updateButton = () => {
         if(button) {
-            if(getActiveShift()) {
+            if(getActiveShift(getShifts())) {
                 button.textContent = "Registrar salida";
             } else {
                 button.textContent = "Registrar entrada";
@@ -41,7 +74,40 @@
         }
     }
 
+    const updateTimeCounter = () => {
+        const activeShift = getActiveShift(getShifts());
+        if (activeShift && timeCounter) {
+            const [year, month, day] = activeShift.date.split("-").map(Number);
+            const [hour, minute] = activeShift.start.split(":").map(Number);
+            
+            const hours = Number(shiftHours.value);
+            const clockOutStr = getClockOutTime(activeShift.start, hours);
+            const [endHour, endMinute] = clockOutStr.split(":").map(Number);
+            
+            let endTime = new Date(year, month - 1, day, endHour, endMinute).getTime();
+            
+            if (endHour < hour) {
+                endTime += 24 * 60 * 60 * 1000;
+            }
+
+            const now = new Date().getTime();
+            const diff = endTime - now;
+
+            if(diff > 0) {
+                const hrs = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                timeCounter.textContent = `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+            } else {
+                timeCounter.textContent = "00:00"; 
+            }
+        } else if (timeCounter) {
+            timeCounter.textContent = "00:00";
+        }
+    }
+
     updateButton();
+    updateTimeCounter();
+    setInterval(updateTimeCounter, 60000);
 
     button?.addEventListener("click", () => {
         const now = new Date();
@@ -56,10 +122,12 @@
             hour12: false
         });
 
-        const activeShift = getActiveShift();
+        const shifts = getShifts();
+        const activeShift = getActiveShift(shifts);
 
         if (activeShift) {
             activeShift.end = time;
+            if (clockOutTime) clockOutTime.textContent = "--:--";
         } else {
             const shift = {
                 id: Date.now().toString(),
@@ -68,10 +136,29 @@
                 end: null
             }
             shifts.push(shift);
+            const valor = Number(shiftHours?.value);
+            if (clockOutTime) clockOutTime.textContent = getClockOutTime(time, valor)
         }
+
 
         localStorage.setItem("shifts", JSON.stringify(shifts));
         window.dispatchEvent(new Event("shifts-updated"));
+
         updateButton();
+        updateTimeCounter();
     });
+
+    shiftHours?.addEventListener("change", () => {
+        const active = getActiveShift(getShifts());
+        if (active) {
+            const hours = Number(shiftHours.value);
+            if(clockOutTime) clockOutTime.textContent = getClockOutTime(active.start, hours);
+        }
+    })
+
+    const active = getActiveShift(getShifts());
+    if(active) {
+        const valor = Number(shiftHours?.value);
+        if (clockOutTime) clockOutTime.textContent = getClockOutTime(active.start, valor)
+    }
 </script>

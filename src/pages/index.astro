@@ -1,8 +1,8 @@
 ---
 import "../styles/global.css";
-import Header from "../components/Header.astro";
+import Nav from "../components/Nav.astro";
 import ShiftCard from "../components/ShiftCard.astro";
-import HoursSummary from "../components/HoursSummary.astro";
+import Stats from "../components/Stats.astro";
 import History from "../components/History.astro";
 ---
 
@@ -10,20 +10,28 @@ import History from "../components/History.astro";
 	<head>
 		<meta charset="UTF-8" />
     	<meta name="viewport" content="width=device-width" />
-    	<title>Servicio Social</title>
+    	<title>SS Time Tracker</title>
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#09090b" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png" />
   	</head>
 
-  	<body class="min-h-screen bg-zinc-950 text-white">
+    <body class="min-h-screen bg-zinc-950 text-white pt-[env(safe-area-inset-top)]">
+        <main class="mx-auto max-w-3xl p-6">
+            <Nav />
 
-    <main class="mx-auto max-w-3xl p-6">
-		<Header />
+            <div class="mb-8 mt-2 text-center">
+                <h1 class="text-3xl font-bold tracking-tight text-white">SS Time Tracker</h1>
+                <p class="mt-2 text-zinc-400">Control de horas de servicio social</p>
+            </div>
 
-		<ShiftCard />
+            <ShiftCard />
 
-		<HoursSummary />
+            <Stats />
 
-		<History />
-    </main>
-
+            <History />
+        </main>
   	</body>
 </html>

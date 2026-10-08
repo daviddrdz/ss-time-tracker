@@ -1,0 +1,139 @@
+---
+---
+
+<section class="mt-4">
+    <h2 class="mb-3 text-xl font-bold">Estadísticas</h2>
+
+    <div class="mb-4 grid grid-cols-2 gap-4">
+        <div class="text-center rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+            <p class="text-sm text-zinc-400">Realizadas</p>
+            <span id="completed-hrs" class="text-4xl font-bold font-mono"></span>
+        </div>
+
+        <div class="text-center rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+            <p class="text-sm text-zinc-400">Restantes</p>
+            <span id="remaining-hrs" class="text-4xl font-bold font-mono"></span>
+        </div>
+    </div>
+
+    <div class="mb-4 rounded-xl border border-zinc-800 bg-zinc-900 p-6 pt-4">
+        <div class="mb-3 flex items-center justify-between">
+            <span id="total-hrs" class="text-m font-medium text-zinc-400"></span>
+            <span id="progress-text" class="text-sm font-bold font-mono text-white">0%</span>
+        </div>
+        <div class="h-3 w-full overflow-hidden rounded-full bg-zinc-800">
+            <div 
+                id="progress-bar" 
+                class="h-full rounded-full bg-white transition-all duration-700 ease-out" 
+                style="width: 0%"
+            ></div>
+        </div>
+    </div>
+
+    <div class="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-6">
+        <div class="text-center">
+            <h3 class="text-xl font-bold text-white">Proyección de término</h3>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-2">
+                <label for="est-hrs-day" class="text-sm text-zinc-400">Horas/día</label>
+                <select id="est-hrs-day" class="h-10 rounded-lg border border-zinc-700 bg-zinc-800 px-2 text-sm text-white outline-none focus:border-zinc-500">
+                    {Array.from({ length: 8 }, (_, i) => i + 1).map(num => (
+                        <option value={num} selected={num === 4}>{num} hrs</option>
+                    ))}
+                </select>
+            </div>
+            
+            <div class="flex flex-col gap-2">
+                <label for="est-days-week" class="text-sm text-zinc-400">Días/semana</label>
+                <select id="est-days-week" class="h-10 rounded-lg border border-zinc-700 bg-zinc-800 px-2 text-sm text-white outline-none focus:border-zinc-500">
+                    {Array.from({ length: 7 }, (_, i) => i + 1).map(num => (
+                        <option value={num} selected={num === 5}>{num} días</option>
+                    ))}
+                </select>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <label for="est-format" class="text-sm text-zinc-400">Formato de vista</label>
+            <select id="est-format" class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 text-sm text-white outline-none focus:border-zinc-500">
+                <option value="detailed">Todo junto (Meses, Semanas, Días)</option>
+                <option value="days">Solo días</option>
+                <option value="weeks">Solo semanas</option>
+                <option value="months">Solo meses</option>
+            </select>
+        </div>
+
+        <div class="rounded-lg border border-zinc-800 bg-zinc-950/50 p-4 text-center">
+            <span id="est-result" class="text-2xl font-bold text-white">--</span>
+        </div>
+    </div>
+
+</section>
+
+<script>
+    import { getTotalHours } from "../lib/shifts.js";
+    import { getSettings } from "../config/settings.js";
+
+    const completedHrs = document.querySelector("#completed-hrs");
+    const remainingHrs = document.querySelector("#remaining-hrs");
+    const totalHrs = document.querySelector("#total-hrs");
+    const progressBar = document.querySelector("#progress-bar") as HTMLElement;
+    const progressText = document.querySelector("#progress-text");
+
+    const estHrsDay = document.querySelector("#est-hrs-day") as HTMLSelectElement;
+    const estDaysWeek = document.querySelector("#est-days-week") as HTMLSelectElement;
+    const estFormat = document.querySelector("#est-format") as HTMLSelectElement;
+    const estResult = document.querySelector("#est-result");
+
+    const updateUI = () => {
+        const settings = getSettings();
+        const completed = getTotalHours();
+        const remaining = Math.max(0, settings.TOTAL_HRS - completed);
+        const percentage = Math.min((completed / settings.TOTAL_HRS) * 100, 100);
+
+        if (completedHrs) completedHrs.textContent = completed + "h";
+        if (remainingHrs) remainingHrs.textContent = remaining + "h";
+        if (totalHrs) totalHrs.textContent = `Meta: ${settings.TOTAL_HRS}h`;
+        if (progressBar) progressBar.style.width = `${percentage}%`;
+        if (progressText) progressText.textContent = `${percentage.toFixed(2)}%`;
+
+        if (remaining <= 0) {
+            if (estResult) estResult.textContent = "¡Servicio terminado!";
+            return;
+        }
+
+        const hrsDay = Number(estHrsDay?.value || 4);
+        const daysWeek = Number(estDaysWeek?.value || 5);
+        const format = estFormat?.value || "detailed";
+        const totalDaysNeeded = Math.ceil(remaining / hrsDay);
+
+        if (format === "days") {
+            if (estResult) estResult.textContent = `${totalDaysNeeded} días`;
+        } else if (format === "weeks") {
+            const w = (totalDaysNeeded / daysWeek).toFixed(1);
+            if (estResult) estResult.textContent = `${w} semanas`;
+        } else if (format === "months") {
+            const m = (totalDaysNeeded / (daysWeek * 4)).toFixed(1);
+            if (estResult) estResult.textContent = `${m} meses`;
+        } else {
+            const months = Math.floor(totalDaysNeeded / (daysWeek * 4));
+            const daysLeftAfterMonths = totalDaysNeeded % (daysWeek * 4);
+            
+            const weeks = Math.floor(daysLeftAfterMonths / daysWeek);
+            const days = daysLeftAfterMonths % daysWeek;
+
+            if (estResult) {
+                estResult.textContent = `${months} meses, ${weeks} sem, ${days} días`;
+            }
+        }
+    }
+
+    updateUI();
+
+    window.addEventListener("shifts-updated", updateUI);
+    estHrsDay?.addEventListener("change", updateUI);
+    estDaysWeek?.addEventListener("change", updateUI);
+    estFormat?.addEventListener("change", updateUI);
+</script>
