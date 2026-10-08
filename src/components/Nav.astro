@@ -1,0 +1,32 @@
+---
+const pathname = Astro.url.pathname;
+const currentPath = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+const baseClass = "flex flex-1 items-center justify-center font-medium transition-all duration-300";
+const inactiveClass = "h-full text-sm text-zinc-400 hover:text-white";
+const activeClass = "text-lg h-16 rounded-full border border-white/10 bg-white/90 font-bold text-black backdrop-blur-md";
+---
+
+<header class="sticky top-6 z-50 mx-auto mb-8 flex h-12 w-full items-center rounded-full border border-zinc-800 bg-zinc-900/80 shadow-xl backdrop-blur-md">
+    
+    <a 
+        href="/settings" 
+        class={`${baseClass} ${pathname === '/settings' ? activeClass : inactiveClass}`}
+    >
+        Ajustes
+    </a>
+    
+    <a 
+        href="/" 
+        class={`${baseClass} ${pathname === '/' ? activeClass : inactiveClass}`}
+    >
+        Inicio
+    </a>
+    
+    <a 
+        href="/calculator" 
+        class={`${baseClass} ${pathname === '/calculator' ? activeClass : inactiveClass}`}
+    >
+        Calculadora
+    </a>
+    
+</header>
