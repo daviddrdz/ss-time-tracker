@@ -9,22 +9,22 @@ const activeClass = "text-lg h-16 rounded-full border border-white/10 bg-white/9
 <header class="sticky top-6 z-50 mx-auto mb-8 flex h-12 w-full items-center rounded-full border border-zinc-800 bg-zinc-900/80 shadow-xl backdrop-blur-md">
     
     <a 
-        href="/settings" 
-        class={`${baseClass} ${pathname === '/settings' ? activeClass : inactiveClass}`}
+    href="/settings" 
+    class={`${baseClass} ${currentPath === '/settings' ? activeClass : inactiveClass}`}
     >
         Ajustes
     </a>
-    
+        
     <a 
         href="/" 
-        class={`${baseClass} ${pathname === '/' ? activeClass : inactiveClass}`}
+        class={`${baseClass} ${currentPath === '/' ? activeClass : inactiveClass}`}
     >
         Inicio
     </a>
-    
+        
     <a 
         href="/calculator" 
-        class={`${baseClass} ${pathname === '/calculator' ? activeClass : inactiveClass}`}
+        class={`${baseClass} ${currentPath === '/calculator' ? activeClass : inactiveClass}`}
     >
         Calculadora
     </a>
