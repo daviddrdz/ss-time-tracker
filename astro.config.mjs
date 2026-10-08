@@ -6,13 +6,14 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
   },
-  
   integrations: [
     AstroPWA({
       registerType: 'autoUpdate',
       injectRegister: 'script',
       workbox: {
-        globPatterns: ['**/*.{css,js,html,svg,png,ico,txt}']
+        globPatterns: ['**/*.{css,js,html,svg,png,ico,txt}'],
+        skipWaiting: true,
+        clientsClaim: true
       },
       manifest: {
         name: 'Servicio Social Tracker',
