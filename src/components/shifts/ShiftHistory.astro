@@ -1,5 +1,5 @@
 ---
-import ShiftModal from "./ShiftModal.astro";
+import ShiftEditDialog from "@/components/shifts/ShiftEditDialog.astro";
 ---
 
 <section class="mt-4">
@@ -11,10 +11,10 @@ import ShiftModal from "./ShiftModal.astro";
     </div>
 </section>
 
-<ShiftModal />
+<ShiftEditDialog />
 
 <script>
-    import { initHistoryController } from "../lib/historyController.js";
+    import { initHistoryController } from "@/lib/shiftHistory.js";
     
     initHistoryController();
 </script>

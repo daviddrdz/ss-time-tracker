@@ -57,8 +57,8 @@
 </section>
 
 <script>
-    import { getSettings } from "../config/settings";
-    import { getClockOutTime, getShifts, getActiveShift } from "../lib/shifts.js";
+    import { getSettings } from "@/config/settings.js";
+    import { getClockOutTime, getShifts, getActiveShift } from "@/lib/shifts.js";
 
     const clockOutTime = document.querySelector("#clock-out-time");
     const shiftHours = document.querySelector("#shift-hours") as HTMLSelectElement;

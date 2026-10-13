@@ -1,4 +1,4 @@
-import { getSettings } from "../config/settings.js";
+import { getSettings } from "@/config/settings.js";
 
 export const getShifts = () => {
     const storedShifts = localStorage.getItem("shifts");

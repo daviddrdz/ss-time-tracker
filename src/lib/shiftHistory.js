@@ -1,4 +1,4 @@
-import { getDuration, getShifts } from "./shifts.js";
+import { getDuration, getShifts } from "@/lib/shifts.js";
 
 export const initHistoryController = () => {
     const historyList = document.querySelector("#history-list");

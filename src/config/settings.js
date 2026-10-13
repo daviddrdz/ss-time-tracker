@@ -1,5 +1,5 @@
 import { DEFAULT_TOTAL_HRS, DEFAULT_INIT_HRS, DEFAULT_MIN_FOR_HR, 
-        DEFAULT_SHIFT_HRS, DEFAULT_DAYS_PER_WEEK } from "./service";
+        DEFAULT_SHIFT_HRS, DEFAULT_DAYS_PER_WEEK } from "@/config/defaults.js";
 
 export const getSettings = () => {
     const defaults = {

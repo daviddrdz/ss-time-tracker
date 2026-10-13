@@ -1,8 +1,8 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import ShiftCard from "../components/ShiftCard.astro";
-import Stats from "../components/Stats.astro";
-import History from "../components/History.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import CurrentShiftCard from "@/components/shifts/CurrentShiftCard.astro";
+import ProgressStats from "@/components/stats/ProgressStats.astro";
+import ShiftHistory from "@/components/shifts/ShiftHistory.astro";
 ---
 
 <BaseLayout
@@ -10,7 +10,7 @@ import History from "../components/History.astro";
     heading="SS Time Tracker"
     subtitle="Control de horas de servicio social"
 >
-    <ShiftCard />
-    <Stats />
-    <History />
+    <CurrentShiftCard />
+    <ProgressStats />
+    <ShiftHistory />
 </BaseLayout>
