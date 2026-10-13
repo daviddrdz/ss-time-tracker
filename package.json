@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "astro check"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -20,6 +21,8 @@
     "esbuild": true
   },
   "devDependencies": {
-    "@vite-pwa/astro": "^1.2.0"
+    "@astrojs/check": "^0.9.10",
+    "@vite-pwa/astro": "^1.2.0",
+    "typescript": "^7.0.2"
   }
 }
