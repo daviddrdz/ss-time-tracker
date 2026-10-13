@@ -17,7 +17,8 @@ export const getDuration = (start, end) => {
     const startTime = (startHrs * 60) + startMin;
     const endTime = (endHrs * 60) + endMin;
 
-    const duration = endTime - startTime;
+    let duration = endTime - startTime;
+    if (duration < 0) duration += 24 * 60;
 
     const durationHrs = Math.floor(duration / 60);
     const durationMin = duration % 60;

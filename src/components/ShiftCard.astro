@@ -18,7 +18,7 @@
                 >
                     {
                         Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
-                            <option value={num} selected={num === 4}>
+                            <option value={num}>
                                 {num} {num === 1 ? 'hora' : 'horas'}
                             </option>
                         ))
@@ -57,12 +57,16 @@
 </section>
 
 <script>
+    import { getSettings } from "../config/settings";
     import { getClockOutTime, getShifts, getActiveShift } from "../lib/shifts.js";
 
     const clockOutTime = document.querySelector("#clock-out-time");
     const shiftHours = document.querySelector("#shift-hours") as HTMLSelectElement;
     const button = document.querySelector("#register-entry");
     const timeCounter = document.querySelector("#time-counter");
+
+    const initialActive = getActiveShift(getShifts());
+    shiftHours.value = String(initialActive?.plannedHours ?? getSettings().SHIFT_HRS);
 
     const updateButton = () => {
         if(button) {
@@ -80,7 +84,7 @@
             const [year, month, day] = activeShift.date.split("-").map(Number);
             const [hour, minute] = activeShift.start.split(":").map(Number);
             
-            const hours = Number(shiftHours.value);
+            const hours = activeShift.plannedHours ?? Number(shiftHours.value);
             const clockOutStr = getClockOutTime(activeShift.start, hours);
             const [endHour, endMinute] = clockOutStr.split(":").map(Number);
             
@@ -116,11 +120,11 @@
             String(now.getMonth() + 1).padStart(2, "0"),
             String(now.getDate()).padStart(2, "0")
         ].join("-");
-        const time = now.toLocaleTimeString("es-MX", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false
-        });
+
+        const time = [
+            String(now.getHours()).padStart(2, "0"),
+            String(now.getMinutes()).padStart(2, "0")
+        ].join(":");
 
         const shifts = getShifts();
         const activeShift = getActiveShift(shifts);
@@ -133,7 +137,8 @@
                 id: Date.now().toString(),
                 date,
                 start: time,
-                end: null
+                end: null,
+                plannedHours: Number(shiftHours.value)
             }
             shifts.push(shift);
             const valor = Number(shiftHours?.value);
@@ -148,13 +153,17 @@
         updateTimeCounter();
     });
 
-    shiftHours?.addEventListener("change", () => {
-        const active = getActiveShift(getShifts());
-        if (active) {
-            const hours = Number(shiftHours.value);
-            if(clockOutTime) clockOutTime.textContent = getClockOutTime(active.start, hours);
-        }
-    })
+    shiftHours.addEventListener("change", () => {
+    const shifts = getShifts();
+    const active = getActiveShift(shifts);
+    if (active) {
+        active.plannedHours = Number(shiftHours.value);
+        localStorage.setItem("shifts", JSON.stringify(shifts));
+
+        if (clockOutTime) clockOutTime.textContent = getClockOutTime(active.start, active.plannedHours);
+        updateTimeCounter();
+    }
+});
 
     const active = getActiveShift(getShifts());
     if(active) {

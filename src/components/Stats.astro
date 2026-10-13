@@ -18,7 +18,7 @@
 
     <div class="mb-4 rounded-xl border border-zinc-800 bg-zinc-900 p-6 pt-4">
         <div class="mb-3 flex items-center justify-between">
-            <span id="total-hrs" class="text-m font-medium text-zinc-400"></span>
+            <span id="total-hrs" class="text-base font-medium text-zinc-400"></span>
             <span id="progress-text" class="text-sm font-bold font-mono text-white">0%</span>
         </div>
         <div class="h-3 w-full overflow-hidden rounded-full bg-zinc-800">
@@ -49,7 +49,7 @@
                 <label for="est-days-week" class="text-sm text-zinc-400">Días/semana</label>
                 <select id="est-days-week" class="h-10 rounded-lg border border-zinc-700 bg-zinc-800 px-2 text-sm text-white outline-none focus:border-zinc-500">
                     {Array.from({ length: 7 }, (_, i) => i + 1).map(num => (
-                        <option value={num} selected={num === 5}>{num} días</option>
+                        <option value={num}>{num} días</option>
                     ))}
                 </select>
             </div>
@@ -74,7 +74,7 @@
 
 <script>
     import { getTotalHours } from "../lib/shifts.js";
-    import { getSettings } from "../config/settings.js";
+    import { getSettings, saveSettings } from "../config/settings.js";
 
     const completedHrs = document.querySelector("#completed-hrs");
     const remainingHrs = document.querySelector("#remaining-hrs");
@@ -86,6 +86,15 @@
     const estDaysWeek = document.querySelector("#est-days-week") as HTMLSelectElement;
     const estFormat = document.querySelector("#est-format") as HTMLSelectElement;
     const estResult = document.querySelector("#est-result");
+
+    const savePreferences = () => {
+        saveSettings({
+            ...getSettings(),
+            SHIFT_HRS: Number(estHrsDay.value),
+            DAYS_PER_WEEK: Number(estDaysWeek.value),
+        });
+    };
+
 
     const updateUI = () => {
         const settings = getSettings();
@@ -130,10 +139,22 @@
         }
     }
 
+    const settings = getSettings();    
+    estHrsDay.value = String(settings.SHIFT_HRS);
+    estDaysWeek.value = String(settings.DAYS_PER_WEEK);
     updateUI();
 
     window.addEventListener("shifts-updated", updateUI);
-    estHrsDay?.addEventListener("change", updateUI);
-    estDaysWeek?.addEventListener("change", updateUI);
     estFormat?.addEventListener("change", updateUI);
+
+    estHrsDay.addEventListener("change", () => {
+        savePreferences();
+        updateUI();
+    })
+    estDaysWeek.addEventListener("change", () => {
+        savePreferences();
+        updateUI();
+    })
+
+
 </script>
