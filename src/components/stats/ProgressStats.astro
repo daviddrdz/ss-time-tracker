@@ -73,8 +73,9 @@
 </section>
 
 <script>
-    import { getTotalHours } from "@/lib/shifts.js";
-    import { getSettings, saveSettings } from "@/config/settings.js";
+    import { getTotalHours } from "@/lib/shifts";
+    import { getSettings, saveSettings } from "@/config/settings";
+    import { SHIFT_UPDATED_EVENT } from "@/lib/storage";
 
     const completedHrs = document.querySelector("#completed-hrs");
     const remainingHrs = document.querySelector("#remaining-hrs");
@@ -144,7 +145,7 @@
     estDaysWeek.value = String(settings.DAYS_PER_WEEK);
     updateUI();
 
-    window.addEventListener("shifts-updated", updateUI);
+    window.addEventListener(SHIFT_UPDATED_EVENT, updateUI);
     estFormat?.addEventListener("change", updateUI);
 
     estHrsDay.addEventListener("change", () => {

@@ -1,7 +1,7 @@
 export interface Shift {
-    id: string,
-    date: string,
-    start: string,
-    end: string | null,
-    plannedHours? : number
-}
+    id: string;
+    date: string;
+    start: string;
+    end: string | null;
+    plannedHours?: number;
+};

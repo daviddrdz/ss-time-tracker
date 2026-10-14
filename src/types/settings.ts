@@ -4,4 +4,4 @@ export interface Settings {
     MIN_FOR_HR: number;
     SHIFT_HRS: number;
     DAYS_PER_WEEK: number;
-}
+};

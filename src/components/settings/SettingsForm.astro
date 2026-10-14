@@ -70,7 +70,7 @@
 </section>
 
 <script>
-    import { getSettings, saveSettings } from "@/config/settings.js";
+    import { getSettings, saveSettings } from "@/config/settings";
 
     const totalHrsInput = document.querySelector("#total-hrs") as HTMLInputElement;
     const initHrsInput = document.querySelector("#init-hrs") as HTMLInputElement;
@@ -82,11 +82,11 @@
     const loadSettings = () => {
         const settings = getSettings();
 
-        if (totalHrsInput) totalHrsInput.value = settings.TOTAL_HRS;
-        if (initHrsInput) initHrsInput.value = settings.INIT_HRS;
-        if (minForHrInput) minForHrInput.value = settings.MIN_FOR_HR;
-        if (shiftHrsInput) shiftHrsInput.value = settings.SHIFT_HRS;
-        if (daysPerWeekInput) daysPerWeekInput.value = settings.DAYS_PER_WEEK;
+        if (totalHrsInput) totalHrsInput.value = String(settings.TOTAL_HRS);
+        if (initHrsInput) initHrsInput.value = String(settings.INIT_HRS);
+        if (minForHrInput) minForHrInput.value = String(settings.MIN_FOR_HR);
+        if (shiftHrsInput) shiftHrsInput.value = String(settings.SHIFT_HRS);
+        if (daysPerWeekInput) daysPerWeekInput.value = String(settings.DAYS_PER_WEEK);
     }
 
     loadSettings();

@@ -1,6 +1,7 @@
-import { getDuration, getShifts } from "@/lib/shifts.js";
+import { getDuration } from "@/lib/shifts";
+import { loadShifts, saveShifts, SHIFT_UPDATED_EVENT } from "@/lib/storage";
 
-export const initHistoryController = () => {
+export const initShiftHistory = () => {
     const historyList = document.querySelector("#history-list");
     const editModal = document.querySelector("#edit-modal");
     const editId = document.querySelector("#edit-id");
@@ -14,7 +15,7 @@ export const initHistoryController = () => {
     if (!historyList) return;
 
     const renderHistory = () => {
-        const shifts = getShifts();
+        const shifts = loadShifts();
         historyList.innerHTML = "";
 
         if (shifts.length === 0) {
@@ -58,16 +59,14 @@ export const initHistoryController = () => {
 
     // Guardar cambios
     btnSave?.addEventListener("click", () => {
-        let shifts = getShifts();
+        const shifts = loadShifts();
         const index = shifts.findIndex(s => s.id === editId.value);
         
         if (index !== -1) {
             shifts[index].date = editDate.value;
             shifts[index].start = editStart.value;
             shifts[index].end = editEnd.value ? editEnd.value : null;
-            
-            localStorage.setItem("shifts", JSON.stringify(shifts));
-            window.dispatchEvent(new Event("shifts-updated"));
+            saveShifts(shifts);
             editModal?.close();
         }
     });
@@ -75,11 +74,8 @@ export const initHistoryController = () => {
     // Eliminar turno
     btnDelete?.addEventListener("click", () => {
         if (confirm("¿Estás seguro de que deseas eliminar este turno? Se restarán las horas de tus estadísticas.")) {
-            let shifts = getShifts();
-            shifts = shifts.filter(s => s.id !== editId.value);
-            
-            localStorage.setItem("shifts", JSON.stringify(shifts));
-            window.dispatchEvent(new Event("shifts-updated"));
+            const remainingShifts = loadShifts().filter(s => s.id !== editId.value);
+            saveShifts(remainingShifts);
             editModal?.close();
         }
     });
@@ -90,5 +86,5 @@ export const initHistoryController = () => {
     });
 
     renderHistory();
-    window.addEventListener("shifts-updated", renderHistory);
+    window.addEventListener(SHIFT_UPDATED_EVENT, renderHistory);
 };

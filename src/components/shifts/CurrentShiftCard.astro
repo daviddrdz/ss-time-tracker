@@ -57,7 +57,7 @@
 </section>
 
 <script>
-    import { getSettings } from "@/config/settings.js";
+    import { getSettings } from "@/config/settings";
     import { getClockOutTime, getActiveShift } from "@/lib/shifts";
     import { loadShifts, saveShifts } from "@/lib/storage";
 
@@ -66,12 +66,12 @@
     const button = document.querySelector("#register-entry");
     const timeCounter = document.querySelector("#time-counter");
 
-    const initialActive = getActiveShift(getShifts());
+    const initialActive = getActiveShift(loadShifts());
     shiftHours.value = String(initialActive?.plannedHours ?? getSettings().SHIFT_HRS);
 
     const updateButton = () => {
         if(button) {
-            if(getActiveShift(getShifts())) {
+            if(getActiveShift(loadShifts())) {
                 button.textContent = "Registrar salida";
             } else {
                 button.textContent = "Registrar entrada";
@@ -80,10 +80,10 @@
     }
 
     const updateTimeCounter = () => {
-        const activeShift = getActiveShift(getShifts());
+        const activeShift = getActiveShift(loadShifts());
         if (activeShift && timeCounter) {
             const [year, month, day] = activeShift.date.split("-").map(Number);
-            const [hour, minute] = activeShift.start.split(":").map(Number);
+            const [hour] = activeShift.start.split(":").map(Number);
             
             const hours = activeShift.plannedHours ?? Number(shiftHours.value);
             const clockOutStr = getClockOutTime(activeShift.start, hours);
@@ -127,7 +127,7 @@
             String(now.getMinutes()).padStart(2, "0")
         ].join(":");
 
-        const shifts = getShifts();
+        const shifts = loadShifts();
         const activeShift = getActiveShift(shifts);
 
         if (activeShift) {
@@ -147,28 +147,27 @@
         }
 
 
-        localStorage.setItem("shifts", JSON.stringify(shifts));
-        window.dispatchEvent(new Event("shifts-updated"));
+        saveShifts(shifts);
 
         updateButton();
         updateTimeCounter();
     });
 
     shiftHours.addEventListener("change", () => {
-    const shifts = getShifts();
-    const active = getActiveShift(shifts);
-    if (active) {
-        active.plannedHours = Number(shiftHours.value);
-        localStorage.setItem("shifts", JSON.stringify(shifts));
+        const shifts = loadShifts();
+        const active = getActiveShift(shifts);
+        if (active) {
+            active.plannedHours = Number(shiftHours.value);
+            saveShifts(shifts);
 
-        if (clockOutTime) clockOutTime.textContent = getClockOutTime(active.start, active.plannedHours);
-        updateTimeCounter();
-    }
-});
+            if (clockOutTime) clockOutTime.textContent = getClockOutTime(active.start, active.plannedHours);
+            updateTimeCounter();
+        }
+    });
 
-    const active = getActiveShift(getShifts());
-    if(active) {
-        const valor = Number(shiftHours?.value);
-        if (clockOutTime) clockOutTime.textContent = getClockOutTime(active.start, valor)
+    const active = getActiveShift(loadShifts());
+    if(active && clockOutTime) {
+        const hours = Number(shiftHours?.value);
+        clockOutTime.textContent = getClockOutTime(active.start, hours);
     }
 </script>

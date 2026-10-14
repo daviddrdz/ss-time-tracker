@@ -29,7 +29,7 @@
                 >
                     {
                         Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
-                            <option value={num} selected={num === 4}>
+                            <option value={num}>
                                 {num} {num === 1 ? 'hora' : 'horas'}
                             </option>
                         ))
@@ -57,12 +57,15 @@
 </section>
 
 <script>
-    import { getClockOutTime } from "@/lib/shifts.js";
+    import { getClockOutTime } from "@/lib/shifts";
+    import { getSettings } from "@/config/settings";
 
     const timeInput = document.querySelector("#calc-time") as HTMLInputElement;
     const hoursSelect = document.querySelector("#calc-hours") as HTMLSelectElement;
     const resultDisplay = document.querySelector("#calc-result");
     const calcCheckOutBtn = document.querySelector("#calc-check-out-btn");
+
+    hoursSelect.value = String(getSettings().SHIFT_HRS);
 
     const calcCheckOut = () => {
         const timeValue = timeInput?.value;
