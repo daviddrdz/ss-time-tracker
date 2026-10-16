@@ -1,5 +1,4 @@
 ---
-
 ---
 
 <section class="mt-4">
@@ -13,18 +12,18 @@
         
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div class="flex flex-col gap-2">
-                <label for="calc-time" class="text-sm text-zinc-400">Hora de entrada</label>
+                <label for="start-time-input" class="text-sm text-zinc-400">Hora de entrada</label>
                 <input 
                     type="time" 
-                    id="calc-time" 
+                    id="start-time-input" 
                     class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500 [color-scheme:dark]"
                 />
             </div>
 
             <div class="flex flex-col gap-2">
-                <label for="calc-hours" class="text-sm text-zinc-400">Horas de jornada</label>
+                <label for="shift-hours-select" class="text-sm text-zinc-400">Horas de jornada</label>
                 <select
-                    id="calc-hours"
+                    id="shift-hours-select"
                     class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500"
                 >
                     {
@@ -40,7 +39,8 @@
 
 
         <button
-            id="calc-check-out-btn"
+            type="button"
+            id="calculate-clock-out-button"
             class="w-full rounded-lg bg-white px-4 py-2 font-medium text-zinc-900 hover:bg-zinc-200"
         >
             Calcular
@@ -48,7 +48,7 @@
            
         <div class="rounded-lg border border-zinc-800 bg-zinc-950/50 p-4 text-center">
             <p class="text-sm text-zinc-400">Hora de salida</p>
-            <span id="calc-result" class="text-6xl font-bold font-mono">
+            <span id="clock-out-display" class="text-6xl font-bold font-mono">
                 --:--
             </span>
         </div>
@@ -59,24 +59,20 @@
 <script>
     import { getClockOutTime } from "@/lib/shifts";
     import { getSettings } from "@/config/settings";
+    import { $ } from "@/lib/dom";
 
-    const timeInput = document.querySelector("#calc-time") as HTMLInputElement;
-    const hoursSelect = document.querySelector("#calc-hours") as HTMLSelectElement;
-    const resultDisplay = document.querySelector("#calc-result");
-    const calcCheckOutBtn = document.querySelector("#calc-check-out-btn");
+    const startTimeInput = $<HTMLInputElement>("#start-time-input");
+    const shiftHoursSelect = $<HTMLSelectElement>("#shift-hours-select");
+    const clockOutDisplay = $<HTMLSpanElement>("#clock-out-display");
+    const calculateClockOutButton = $<HTMLButtonElement>("#calculate-clock-out-button");
 
-    hoursSelect.value = String(getSettings().SHIFT_HRS);
+    shiftHoursSelect.value = String(getSettings().SHIFT_HRS);
 
-    const calcCheckOut = () => {
-        const timeValue = timeInput?.value;
-        const hoursValue = Number(hoursSelect?.value);
+    calculateClockOutButton.addEventListener("click", () => {
+        const startTime = startTimeInput.value;
+        const shiftHours = Number(shiftHoursSelect.value);
 
-        if (timeValue && hoursValue && resultDisplay) {
-            resultDisplay.textContent = getClockOutTime(timeValue, hoursValue);
-        } else if (resultDisplay) {
-            resultDisplay.textContent = "--:--";
-        }
-    };
-
-    calcCheckOutBtn?.addEventListener("click", calcCheckOut);
+        clockOutDisplay.textContent = startTime && shiftHours ? getClockOutTime(startTime, shiftHours) : "--:--";
+    });
 </script>
+

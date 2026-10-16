@@ -7,19 +7,19 @@
     <div class="mb-4 grid grid-cols-2 gap-4">
         <div class="text-center rounded-xl border border-zinc-800 bg-zinc-900 p-6">
             <p class="text-sm text-zinc-400">Realizadas</p>
-            <span id="completed-hrs" class="text-4xl font-bold font-mono"></span>
+            <span id="completed-hours-display" class="text-4xl font-bold font-mono"></span>
         </div>
 
         <div class="text-center rounded-xl border border-zinc-800 bg-zinc-900 p-6">
             <p class="text-sm text-zinc-400">Restantes</p>
-            <span id="remaining-hrs" class="text-4xl font-bold font-mono"></span>
+            <span id="remaining-hours-display" class="text-4xl font-bold font-mono"></span>
         </div>
     </div>
 
     <div class="mb-4 rounded-xl border border-zinc-800 bg-zinc-900 p-6 pt-4">
         <div class="mb-3 flex items-center justify-between">
-            <span id="total-hrs" class="text-base font-medium text-zinc-400"></span>
-            <span id="progress-text" class="text-sm font-bold font-mono text-white">0%</span>
+            <span id="goal-hours-display" class="text-base font-medium text-zinc-400"></span>
+            <span id="progress-percentage-display" class="text-sm font-bold font-mono text-white">0%</span>
         </div>
         <div class="h-3 w-full overflow-hidden rounded-full bg-zinc-800">
             <div 
@@ -37,17 +37,17 @@
 
         <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col gap-2">
-                <label for="est-hrs-day" class="text-sm text-zinc-400">Horas/día</label>
-                <select id="est-hrs-day" class="h-10 rounded-lg border border-zinc-700 bg-zinc-800 px-2 text-sm text-white outline-none focus:border-zinc-500">
+                <label for="hours-per-day-select" class="text-sm text-zinc-400">Horas/día</label>
+                <select id="hours-per-day-select" class="h-10 rounded-lg border border-zinc-700 bg-zinc-800 px-2 text-sm text-white outline-none focus:border-zinc-500">
                     {Array.from({ length: 8 }, (_, i) => i + 1).map(num => (
-                        <option value={num} selected={num === 4}>{num} hrs</option>
+                        <option value={num}>{num} hrs</option>
                     ))}
                 </select>
             </div>
             
             <div class="flex flex-col gap-2">
-                <label for="est-days-week" class="text-sm text-zinc-400">Días/semana</label>
-                <select id="est-days-week" class="h-10 rounded-lg border border-zinc-700 bg-zinc-800 px-2 text-sm text-white outline-none focus:border-zinc-500">
+                <label for="days-per-week-select" class="text-sm text-zinc-400">Días/semana</label>
+                <select id="days-per-week-select" class="h-10 rounded-lg border border-zinc-700 bg-zinc-800 px-2 text-sm text-white outline-none focus:border-zinc-500">
                     {Array.from({ length: 7 }, (_, i) => i + 1).map(num => (
                         <option value={num}>{num} días</option>
                     ))}
@@ -56,8 +56,8 @@
         </div>
 
         <div class="flex flex-col gap-2">
-            <label for="est-format" class="text-sm text-zinc-400">Formato de vista</label>
-            <select id="est-format" class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 text-sm text-white outline-none focus:border-zinc-500">
+            <label for="projection-format-select" class="text-sm text-zinc-400">Formato de vista</label>
+            <select id="projection-format-select" class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 text-sm text-white outline-none focus:border-zinc-500">
                 <option value="detailed">Todo junto (Meses, Semanas, Días)</option>
                 <option value="days">Solo días</option>
                 <option value="weeks">Solo semanas</option>
@@ -66,7 +66,7 @@
         </div>
 
         <div class="rounded-lg border border-zinc-800 bg-zinc-950/50 p-4 text-center">
-            <span id="est-result" class="text-2xl font-bold text-white">--</span>
+            <span id="projection-result-display" class="text-2xl font-bold text-white">--</span>
         </div>
     </div>
 
@@ -76,23 +76,25 @@
     import { getTotalHours } from "@/lib/shifts";
     import { getSettings, saveSettings } from "@/config/settings";
     import { SHIFT_UPDATED_EVENT } from "@/lib/storage";
+    import { formatProjection, type ProjectionFormat } from "@/lib/projection";
+    import { $ } from "@/lib/dom";
 
-    const completedHrs = document.querySelector("#completed-hrs");
-    const remainingHrs = document.querySelector("#remaining-hrs");
-    const totalHrs = document.querySelector("#total-hrs");
-    const progressBar = document.querySelector("#progress-bar") as HTMLElement;
-    const progressText = document.querySelector("#progress-text");
+    const completedHoursDisplay = $<HTMLSpanElement>("#completed-hours-display");
+    const remainingHoursDisplay = $<HTMLSpanElement>("#remaining-hours-display");
+    const goalHoursDisplay = $<HTMLSpanElement>("#goal-hours-display");
+    const progressBar = $<HTMLDivElement>("#progress-bar");
+    const progressPercentageDisplay = $<HTMLSpanElement>("#progress-percentage-display");
 
-    const estHrsDay = document.querySelector("#est-hrs-day") as HTMLSelectElement;
-    const estDaysWeek = document.querySelector("#est-days-week") as HTMLSelectElement;
-    const estFormat = document.querySelector("#est-format") as HTMLSelectElement;
-    const estResult = document.querySelector("#est-result");
+    const hoursPerDaySelect = $<HTMLSelectElement>("#hours-per-day-select");
+    const daysPerWeekSelect = $<HTMLSelectElement>("#days-per-week-select");
+    const projectionFormatSelect = $<HTMLSelectElement>("#projection-format-select");
+    const projectionResultDisplay = $<HTMLSpanElement>("#projection-result-display");
 
     const savePreferences = () => {
         saveSettings({
             ...getSettings(),
-            SHIFT_HRS: Number(estHrsDay.value),
-            DAYS_PER_WEEK: Number(estDaysWeek.value),
+            SHIFT_HRS: Number(hoursPerDaySelect.value),
+            DAYS_PER_WEEK: Number(daysPerWeekSelect.value),
         });
     };
 
@@ -103,59 +105,41 @@
         const remaining = Math.max(0, settings.TOTAL_HRS - completed);
         const percentage = Math.min((completed / settings.TOTAL_HRS) * 100, 100);
 
-        if (completedHrs) completedHrs.textContent = completed + "h";
-        if (remainingHrs) remainingHrs.textContent = remaining + "h";
-        if (totalHrs) totalHrs.textContent = `Meta: ${settings.TOTAL_HRS}h`;
-        if (progressBar) progressBar.style.width = `${percentage}%`;
-        if (progressText) progressText.textContent = `${percentage.toFixed(2)}%`;
+        completedHoursDisplay.textContent = completed + "h";
+        remainingHoursDisplay.textContent = remaining + "h";
+        goalHoursDisplay.textContent = `Meta: ${settings.TOTAL_HRS}h`;
+        progressBar.style.width = `${percentage}%`;
+        progressPercentageDisplay.textContent = `${percentage.toFixed(2)}%`;
 
         if (remaining <= 0) {
-            if (estResult) estResult.textContent = "¡Servicio terminado!";
+            projectionResultDisplay.textContent = "¡Servicio terminado!";
             return;
         }
-
-        const hrsDay = Number(estHrsDay?.value || 4);
-        const daysWeek = Number(estDaysWeek?.value || 5);
-        const format = estFormat?.value || "detailed";
-        const totalDaysNeeded = Math.ceil(remaining / hrsDay);
-
-        if (format === "days") {
-            if (estResult) estResult.textContent = `${totalDaysNeeded} días`;
-        } else if (format === "weeks") {
-            const w = (totalDaysNeeded / daysWeek).toFixed(1);
-            if (estResult) estResult.textContent = `${w} semanas`;
-        } else if (format === "months") {
-            const m = (totalDaysNeeded / (daysWeek * 4)).toFixed(1);
-            if (estResult) estResult.textContent = `${m} meses`;
-        } else {
-            const months = Math.floor(totalDaysNeeded / (daysWeek * 4));
-            const daysLeftAfterMonths = totalDaysNeeded % (daysWeek * 4);
-            
-            const weeks = Math.floor(daysLeftAfterMonths / daysWeek);
-            const days = daysLeftAfterMonths % daysWeek;
-
-            if (estResult) {
-                estResult.textContent = `${months} meses, ${weeks} sem, ${days} días`;
-            }
-        }
+        
+        projectionResultDisplay.textContent = formatProjection(
+            remaining,
+            Number(hoursPerDaySelect.value),
+            Number(daysPerWeekSelect.value),
+            projectionFormatSelect.value as ProjectionFormat,
+        );
     }
 
-    const settings = getSettings();    
-    estHrsDay.value = String(settings.SHIFT_HRS);
-    estDaysWeek.value = String(settings.DAYS_PER_WEEK);
+    const initialSettings = getSettings();
+    hoursPerDaySelect.value = String(initialSettings.SHIFT_HRS);
+    daysPerWeekSelect.value = String(initialSettings.DAYS_PER_WEEK);
     updateUI();
 
     window.addEventListener(SHIFT_UPDATED_EVENT, updateUI);
-    estFormat?.addEventListener("change", updateUI);
+    projectionFormatSelect.addEventListener("change", updateUI);
 
-    estHrsDay.addEventListener("change", () => {
+    hoursPerDaySelect.addEventListener("change", () => {
         savePreferences();
         updateUI();
     })
-    estDaysWeek.addEventListener("change", () => {
+    daysPerWeekSelect.addEventListener("change", () => {
         savePreferences();
         updateUI();
     })
-
 
 </script>
+

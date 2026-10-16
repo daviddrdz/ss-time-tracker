@@ -4,15 +4,14 @@
 <section class="mt-4">
     <h2 class="mb-3 text-xl font-bold">Turno de hoy</h2>
 
-
     <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-6">
 
         <div class="grid grid-cols-2 gap-4">
 
             <div class="flex flex-col gap-2">
-                <label for="shift-hours" class="text-sm text-zinc-400">Horas de jornada</label>
+                <label for="shift-hours-select" class="text-sm text-zinc-400">Horas de jornada</label>
                 <select
-                    id="shift-hours"
+                    id="shift-hours-select"
                     class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 
                             text-white outline-none focus:border-zinc-500"
                 >
@@ -30,7 +29,7 @@
                 <span class="text-sm text-zinc-400">Tiempo restante</span>
                 <div class="flex h-10 w-full items-center justify-center rounded-lg border 
                             border-zinc-700 bg-zinc-800 px-3 py-2 text-white">
-                    <span id="time-counter" class="font-mono text-base font-medium tracking-wide">
+                    <span id="time-remaining-display" class="font-mono text-base font-medium tracking-wide">
                         00:00
                     </span>
                 </div>
@@ -40,13 +39,13 @@
 
         <div class="rounded-lg border border-zinc-800 bg-zinc-950/50 p-4 text-center">
             <p class="text-sm text-zinc-400">Hora de salida</p>
-                <span id="clock-out-time" class="text-6xl font-bold font-mono">
+                <span id="clock-out-display" class="text-6xl font-bold font-mono">
                 --:--
             </span>
         </div>
 
         <button
-            id="register-entry"
+            id="register-button"
             class="w-full rounded-lg bg-white px-4 py-2 font-medium text-zinc-900 hover:bg-zinc-200"
         >
             Registrar entrada
@@ -57,71 +56,62 @@
 </section>
 
 <script>
+    import type { Shift } from "@/types/shift";
     import { getSettings } from "@/config/settings";
     import { getClockOutTime, getActiveShift } from "@/lib/shifts";
-    import { loadShifts, saveShifts } from "@/lib/storage";
+    import { loadShifts, saveShifts, SHIFT_UPDATED_EVENT } from "@/lib/storage";
+    import { $ } from "@/lib/dom";
 
-    const clockOutTime = document.querySelector("#clock-out-time");
-    const shiftHours = document.querySelector("#shift-hours") as HTMLSelectElement;
-    const button = document.querySelector("#register-entry");
-    const timeCounter = document.querySelector("#time-counter");
+    const MS_PER_MINUTE = 60_000;
 
-    const initialActive = getActiveShift(loadShifts());
-    shiftHours.value = String(initialActive?.plannedHours ?? getSettings().SHIFT_HRS);
+    const clockOutDisplay = $<HTMLSpanElement>("#clock-out-display");
+    const shiftHoursSelect = $<HTMLSelectElement>("#shift-hours-select");
+    const registerButton = $<HTMLButtonElement>("#register-button");
+    const timeRemainingDisplay = $<HTMLSpanElement>("#time-remaining-display");
 
-    const updateButton = () => {
-        if(button) {
-            if(getActiveShift(loadShifts())) {
-                button.textContent = "Registrar salida";
-            } else {
-                button.textContent = "Registrar entrada";
-            }
-        }
-    }
+    const getRemainingText = (shift: Shift, plannedHours: number): string => {
+        const [year, month, day] = shift.date.split("-").map(Number);
+        const [startHour] = shift.start.split(":").map(Number);
+        const [endHour, endMinute] = getClockOutTime(shift.start, plannedHours).split(":").map(Number);
 
-    const updateTimeCounter = () => {
+        let endTime = new Date(year, month - 1, day, endHour, endMinute).getTime();
+        if (endHour < startHour) endTime += 24 * 60 * MS_PER_MINUTE;
+
+        const remainingMinutes = Math.max(0, Math.floor((endTime - Date.now()) / MS_PER_MINUTE));
+        const hours = String(Math.floor(remainingMinutes / 60)).padStart(2, "0");
+        const minutes = String(remainingMinutes % 60).padStart(2, "0");
+
+        return `${hours}:${minutes}`;
+    };
+
+    const render = () => {
         const activeShift = getActiveShift(loadShifts());
-        if (activeShift && timeCounter) {
-            const [year, month, day] = activeShift.date.split("-").map(Number);
-            const [hour] = activeShift.start.split(":").map(Number);
-            
-            const hours = activeShift.plannedHours ?? Number(shiftHours.value);
-            const clockOutStr = getClockOutTime(activeShift.start, hours);
-            const [endHour, endMinute] = clockOutStr.split(":").map(Number);
-            
-            let endTime = new Date(year, month - 1, day, endHour, endMinute).getTime();
-            
-            if (endHour < hour) {
-                endTime += 24 * 60 * 60 * 1000;
-            }
 
-            const now = new Date().getTime();
-            const diff = endTime - now;
-
-            if(diff > 0) {
-                const hrs = Math.floor(diff / (1000 * 60 * 60));
-                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                timeCounter.textContent = `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
-            } else {
-                timeCounter.textContent = "00:00"; 
-            }
-        } else if (timeCounter) {
-            timeCounter.textContent = "00:00";
+        if (!activeShift) {
+            registerButton.textContent = "Registrar entrada";
+            clockOutDisplay.textContent = "--:--";
+            timeRemainingDisplay.textContent = "00:00";
+            return;
         }
-    }
 
-    updateButton();
-    updateTimeCounter();
-    setInterval(updateTimeCounter, 60000);
+        const plannedHours = activeShift.plannedHours ?? Number(shiftHoursSelect.value);
 
-    button?.addEventListener("click", () => {
+        registerButton.textContent = "Registrar salida";
+        clockOutDisplay.textContent = getClockOutTime(activeShift.start, plannedHours);
+        timeRemainingDisplay.textContent = getRemainingText(activeShift, plannedHours);
+    };
+
+    shiftHoursSelect.value = String(
+        getActiveShift(loadShifts())?.plannedHours ?? getSettings().SHIFT_HRS
+    );
+
+    registerButton.addEventListener("click", () => {
         const now = new Date();
         const date = [
             now.getFullYear(),
             String(now.getMonth() + 1).padStart(2, "0"),
             String(now.getDate()).padStart(2, "0")
         ].join("-");
-
         const time = [
             String(now.getHours()).padStart(2, "0"),
             String(now.getMinutes()).padStart(2, "0")
@@ -132,42 +122,30 @@
 
         if (activeShift) {
             activeShift.end = time;
-            if (clockOutTime) clockOutTime.textContent = "--:--";
         } else {
-            const shift = {
+            shifts.push({
                 id: Date.now().toString(),
                 date,
                 start: time,
                 end: null,
-                plannedHours: Number(shiftHours.value)
-            }
-            shifts.push(shift);
-            const valor = Number(shiftHours?.value);
-            if (clockOutTime) clockOutTime.textContent = getClockOutTime(time, valor)
+                plannedHours: Number(shiftHoursSelect.value),
+            });
         }
-
 
         saveShifts(shifts);
-
-        updateButton();
-        updateTimeCounter();
     });
 
-    shiftHours.addEventListener("change", () => {
+    shiftHoursSelect.addEventListener("change", () => {
         const shifts = loadShifts();
-        const active = getActiveShift(shifts);
-        if (active) {
-            active.plannedHours = Number(shiftHours.value);
-            saveShifts(shifts);
+        const activeShift = getActiveShift(shifts);
+        if (!activeShift) return;
 
-            if (clockOutTime) clockOutTime.textContent = getClockOutTime(active.start, active.plannedHours);
-            updateTimeCounter();
-        }
+        activeShift.plannedHours = Number(shiftHoursSelect.value);
+        saveShifts(shifts);
     });
 
-    const active = getActiveShift(loadShifts());
-    if(active && clockOutTime) {
-        const hours = Number(shiftHours?.value);
-        clockOutTime.textContent = getClockOutTime(active.start, hours);
-    }
+    window.addEventListener(SHIFT_UPDATED_EVENT, render);
+    setInterval(render, 30_000);
+    render();
 </script>
+

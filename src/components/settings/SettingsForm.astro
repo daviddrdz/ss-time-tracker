@@ -8,50 +8,50 @@
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <!-- TOTAL_HRS -->
             <div class="flex flex-col gap-2">
-                <label for="total-hrs" class="text-sm text-zinc-400">Total de horas del servicio social</label>
+                <label for="total-hours-input" class="text-sm text-zinc-400">Total de horas del servicio social</label>
                 <input 
                     type="number" 
-                    id="total-hrs" 
+                    id="total-hours-input" 
                     class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
                 />
             </div>
 
             <!-- INIT_HRS -->
             <div class="flex flex-col gap-2">
-                <label for="init-hrs" class="text-sm text-zinc-400">Horas previamente realizadas</label>
+                <label for="initial-hours-input" class="text-sm text-zinc-400">Horas previamente realizadas</label>
                 <input 
                     type="number" 
-                    id="init-hrs" 
+                    id="initial-hours-input" 
                     class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
                 />
             </div>
 
             <!-- MIN_FOR_HR -->
             <div class="flex flex-col gap-2">
-                <label for="min-for-hr" class="text-sm text-zinc-400">Minutos mínimos para redondear a hora</label>
+                <label for="min-minutes-to-round-input" class="text-sm text-zinc-400">Minutos mínimos para redondear a hora</label>
                 <input 
                     type="number" 
-                    id="min-for-hr" 
+                    id="min-minutes-to-round-input" 
                     class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
                 />
             </div>
 
             <!-- DEFAULT_SHIFT_HRS -->
             <div class="flex flex-col gap-2">
-                <label for="shift-hrs" class="text-sm text-zinc-400">Horas por defecto de la jornada</label>
+                <label for="default-shift-hours-input" class="text-sm text-zinc-400">Horas por defecto de la jornada</label>
                 <input 
                     type="number" 
-                    id="shift-hrs" 
+                    id="default-shift-hours-input" 
                     class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
                 />
             </div>
 
             <!-- DAYS_PER_WEEK -->
             <div class="flex flex-col gap-2">
-                <label for="days-per-week" class="text-sm text-zinc-400">Días de asistencia por semana</label>
+                <label for="days-per-week-input" class="text-sm text-zinc-400">Días de asistencia por semana</label>
                 <input
                     type="number"
-                    id="days-per-week"
+                    id="days-per-week-input"
                     min="1"
                     max="7"
                     class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500"
@@ -60,7 +60,7 @@
         </div>
 
         <button
-            id="save-settings"
+            id="save-settings-button"
             class="mt-4 w-full rounded-lg bg-white px-4 py-2 font-medium text-zinc-900 transition-colors hover:bg-zinc-200"
         >
             Guardar ajustes
@@ -71,41 +71,40 @@
 
 <script>
     import { getSettings, saveSettings } from "@/config/settings";
+    import { $ } from "@/lib/dom";
 
-    const totalHrsInput = document.querySelector("#total-hrs") as HTMLInputElement;
-    const initHrsInput = document.querySelector("#init-hrs") as HTMLInputElement;
-    const minForHrInput = document.querySelector("#min-for-hr") as HTMLInputElement;
-    const shiftHrsInput = document.querySelector("#shift-hrs") as HTMLInputElement;
-    const daysPerWeekInput = document.querySelector("#days-per-week") as HTMLInputElement;
-    const saveButton = document.querySelector("#save-settings");
+    const totalHoursInput = $<HTMLInputElement>("#total-hours-input");
+    const initialHoursInput = $<HTMLInputElement>("#initial-hours-input");
+    const minMinutesToRoundHourInput = $<HTMLInputElement>("#min-minutes-to-round-input");
+    const defaultShiftHoursInput = $<HTMLInputElement>("#default-shift-hours-input");
+    const daysPerWeekInput = $<HTMLInputElement>("#days-per-week-input");
+    const saveSettingsButton = $<HTMLButtonElement>("#save-settings-button");
 
-    const loadSettings = () => {
+    const SAVE_LABEL = saveSettingsButton.textContent;
+
+    const fillForm = () => {
         const settings = getSettings();
+        totalHoursInput.value = String(settings.TOTAL_HRS);
+        initialHoursInput.value = String(settings.INIT_HRS);
+        minMinutesToRoundHourInput.value = String(settings.MIN_FOR_HR);
+        defaultShiftHoursInput.value = String(settings.SHIFT_HRS);
+        daysPerWeekInput.value = String(settings.DAYS_PER_WEEK);
+    };
 
-        if (totalHrsInput) totalHrsInput.value = String(settings.TOTAL_HRS);
-        if (initHrsInput) initHrsInput.value = String(settings.INIT_HRS);
-        if (minForHrInput) minForHrInput.value = String(settings.MIN_FOR_HR);
-        if (shiftHrsInput) shiftHrsInput.value = String(settings.SHIFT_HRS);
-        if (daysPerWeekInput) daysPerWeekInput.value = String(settings.DAYS_PER_WEEK);
-    }
+    fillForm();
+    saveSettingsButton.addEventListener("click", () => {
+        saveSettings({
+            TOTAL_HRS: Number(totalHoursInput.value),
+            INIT_HRS: Number(initialHoursInput.value),
+            MIN_FOR_HR: Number(minMinutesToRoundHourInput.value),
+            SHIFT_HRS: Number(defaultShiftHoursInput.value),
+            DAYS_PER_WEEK: Number(daysPerWeekInput.value)
+        });
 
-    loadSettings();
-
-    saveButton?.addEventListener("click", () => {
-        const newSettings = {
-            TOTAL_HRS: Number(totalHrsInput.value),
-            INIT_HRS: Number(initHrsInput.value),
-            MIN_FOR_HR: Number(minForHrInput.value),
-            SHIFT_HRS: Number(shiftHrsInput.value),
-            DAYS_PER_WEEK: Number(daysPerWeekInput.value),
-        };
-
-        saveSettings(newSettings);
-
-        const originalText = saveButton.textContent;
-        saveButton.textContent = "¡Ajustes guardados!";
+        saveSettingsButton.textContent = "¡Ajustes guardados!";
         setTimeout(() => {
-            if (saveButton) saveButton.textContent = originalText;
-        }, 2000); 
-    })
+            saveSettingsButton.textContent = SAVE_LABEL;
+        }, 2000);
+    });
 </script>
+
