@@ -1,32 +1,36 @@
 ---
-const pathname = Astro.url.pathname;
-const currentPath = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
-const baseClass = "flex flex-1 items-center justify-center font-medium transition-all duration-300";
+const links = [
+    { href: "/settings", label: "Ajustes" },
+    { href: "/", label: "Inicio" },
+    { href: "/calculator", label: "Calculadora" },
+];
+
+const { pathname } = Astro.url;
+const currentPath = pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+
+const baseClass = "flex flex-1 items-center justify-center rounded-full font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60";
 const inactiveClass = "h-full text-sm text-zinc-400 hover:text-white";
-const activeClass = "text-lg h-16 rounded-full border border-white/10 bg-white/90 font-bold text-black backdrop-blur-md";
+const activeClass = "h-16 border border-white/10 bg-white/90 text-lg font-bold text-black backdrop-blur-md";
 ---
 
-<header class="sticky top-6 z-50 mx-auto mb-8 flex h-12 w-full items-center rounded-full border border-zinc-800 bg-zinc-900/80 shadow-xl backdrop-blur-md">
-    
-    <a 
-    href="/settings" 
-    class={`${baseClass} ${currentPath === '/settings' ? activeClass : inactiveClass}`}
-    >
-        Ajustes
-    </a>
-        
-    <a 
-        href="/" 
-        class={`${baseClass} ${currentPath === '/' ? activeClass : inactiveClass}`}
-    >
-        Inicio
-    </a>
-        
-    <a 
-        href="/calculator" 
-        class={`${baseClass} ${currentPath === '/calculator' ? activeClass : inactiveClass}`}
-    >
-        Calculadora
-    </a>
-    
-</header>
+<nav
+    aria-label="Navegación principal"
+    class="sticky top-6 z-50 mx-auto mb-8 flex h-12 w-full items-center rounded-full border border-zinc-800 bg-zinc-900/80 shadow-xl backdrop-blur-md"
+>
+    {
+        links.map(({ href, label }) => {
+            const isActive = currentPath === href;
+
+            return (
+                <a
+                    href={href}
+                    aria-current={isActive ? "page" : undefined}
+                    class:list={[baseClass, isActive ? activeClass : inactiveClass]}
+                >
+                    {label}
+                </a>
+            );
+        })
+    }
+</nav>
+
