@@ -4,17 +4,39 @@ import ShiftEditDialog from "@/components/shifts/ShiftEditDialog.astro";
 
 <section class="mt-4">
     <h2 class="mb-3 text-xl font-bold">Historial</h2>
-    <div 
+
+    <ul
         id="history-list"
         class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900"
+    ></ul>
+
+    <p
+        id="history-empty-message"
+        class="rounded-xl border border-zinc-800 bg-zinc-900 p-6 text-center text-sm text-zinc-500"
+        hidden
     >
-    </div>
+        No hay turnos registrados.
+    </p>
 </section>
+
+<template id="shift-row-template">
+    <li class="border-b border-zinc-800 last:border-0">
+        <button
+            type="button"
+            data-shift-id
+            class="grid w-full grid-cols-3 items-center p-4 text-left transition-colors hover:bg-zinc-800/50 focus-visible:bg-zinc-800/50 focus-visible:outline-none"
+        >
+            <span data-field="date" class="font-medium"></span>
+            <span data-field="range" class="text-center text-sm text-zinc-400"></span>
+            <span data-field="duration" class="text-right font-mono font-medium"></span>
+        </button>
+    </li>
+</template>
 
 <ShiftEditDialog />
 
 <script>
     import { initShiftHistory } from "@/lib/shiftHistory";
-    
+
     initShiftHistory();
 </script>

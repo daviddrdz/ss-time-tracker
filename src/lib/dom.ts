@@ -1,5 +1,5 @@
-export function $<T extends Element>(selector: string): T {
-    const element = document.querySelector<T>(selector);
+export function $<T extends Element>(selector: string, parent: ParentNode = document): T {
+    const element = parent.querySelector<T>(selector);
 
     if (!element) {
         throw new Error(`Elemento no encontrado: ${selector}`);
