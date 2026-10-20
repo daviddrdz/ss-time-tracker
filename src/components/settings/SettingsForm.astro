@@ -1,71 +1,39 @@
 ---
-
+import Field from "@/components/ui/Field.astro";
+import Input from "@/components/ui/Input.astro";
+import Button from "@/components/ui/Button.astro";
+import DaysSelect from "@/components/ui/DaysSelect.astro";
+import HoursSelect from "@/components/ui/HoursSelect.astro";
 ---
 
 <section class="mt-4">
     <div class="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-6">
         
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <!-- TOTAL_HRS -->
-            <div class="flex flex-col gap-2">
-                <label for="total-hours-input" class="text-sm text-zinc-400">Total de horas del servicio social</label>
-                <input 
-                    type="number" 
-                    id="total-hours-input" 
-                    class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
-                />
-            </div>
+            <Field label="Total de horas del servicio social" labelFor="total-hours-input">
+                <Input type="number" id="total-hours-input" />
+            </Field>
 
-            <!-- INIT_HRS -->
-            <div class="flex flex-col gap-2">
-                <label for="initial-hours-input" class="text-sm text-zinc-400">Horas previamente realizadas</label>
-                <input 
-                    type="number" 
-                    id="initial-hours-input" 
-                    class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
-                />
-            </div>
+            <Field label="Horas previamente realizadas" labelFor="initial-hours-input">
+                <Input type="number" id="initial-hours-input" />
+            </Field>
 
-            <!-- MIN_FOR_HR -->
-            <div class="flex flex-col gap-2">
-                <label for="min-minutes-to-round-input" class="text-sm text-zinc-400">Minutos mínimos para redondear a hora</label>
-                <input 
-                    type="number" 
-                    id="min-minutes-to-round-input" 
-                    class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
-                />
-            </div>
+            <Field label="Minutos mínimos para redondear a hora" labelFor="min-minutes-to-round-input">
+                <Input type="number" id="min-minutes-to-round-input" min="0" max="60" />
+            </Field>
 
-            <!-- DEFAULT_SHIFT_HRS -->
-            <div class="flex flex-col gap-2">
-                <label for="default-shift-hours-input" class="text-sm text-zinc-400">Horas por defecto de la jornada</label>
-                <input 
-                    type="number" 
-                    id="default-shift-hours-input" 
-                    class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500" 
-                />
-            </div>
+            <Field label="Horas por defecto de la jornada" labelFor="default-shift-hours-select">
+                <HoursSelect id="default-shift-hours-select" />
+            </Field>
 
-            <!-- DAYS_PER_WEEK -->
-            <div class="flex flex-col gap-2">
-                <label for="days-per-week-input" class="text-sm text-zinc-400">Días de asistencia por semana</label>
-                <input
-                    type="number"
-                    id="days-per-week-input"
-                    min="1"
-                    max="7"
-                    class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500"
-                />
-            </div>
+            <Field label="Días de asistencia por semana" labelFor="days-per-week-select">
+                <DaysSelect id="days-per-week-select" />
+            </Field>
         </div>
 
-        <button
-            id="save-settings-button"
-            class="mt-4 w-full rounded-lg bg-white px-4 py-2 font-medium text-zinc-900 transition-colors hover:bg-zinc-200"
-        >
+        <Button id="save-settings-button" class="w-full mt-4">
             Guardar ajustes
-        </button>
-
+        </Button>
     </div>
 </section>
 
@@ -76,8 +44,8 @@
     const totalHoursInput = $<HTMLInputElement>("#total-hours-input");
     const initialHoursInput = $<HTMLInputElement>("#initial-hours-input");
     const minMinutesToRoundHourInput = $<HTMLInputElement>("#min-minutes-to-round-input");
-    const defaultShiftHoursInput = $<HTMLInputElement>("#default-shift-hours-input");
-    const daysPerWeekInput = $<HTMLInputElement>("#days-per-week-input");
+    const defaultShiftHoursSelect = $<HTMLInputElement>("#default-shift-hours-select");
+    const daysPerWeekSelect = $<HTMLInputElement>("#days-per-week-select");
     const saveSettingsButton = $<HTMLButtonElement>("#save-settings-button");
 
     const SAVE_LABEL = saveSettingsButton.textContent;
@@ -87,8 +55,8 @@
         totalHoursInput.value = String(settings.TOTAL_HRS);
         initialHoursInput.value = String(settings.INIT_HRS);
         minMinutesToRoundHourInput.value = String(settings.MIN_FOR_HR);
-        defaultShiftHoursInput.value = String(settings.SHIFT_HRS);
-        daysPerWeekInput.value = String(settings.DAYS_PER_WEEK);
+        defaultShiftHoursSelect.value = String(settings.SHIFT_HRS);
+        daysPerWeekSelect.value = String(settings.DAYS_PER_WEEK);
     };
 
     fillForm();
@@ -97,8 +65,8 @@
             TOTAL_HRS: Number(totalHoursInput.value),
             INIT_HRS: Number(initialHoursInput.value),
             MIN_FOR_HR: Number(minMinutesToRoundHourInput.value),
-            SHIFT_HRS: Number(defaultShiftHoursInput.value),
-            DAYS_PER_WEEK: Number(daysPerWeekInput.value)
+            SHIFT_HRS: Number(defaultShiftHoursSelect.value),
+            DAYS_PER_WEEK: Number(daysPerWeekSelect.value)
         });
 
         saveSettingsButton.textContent = "¡Ajustes guardados!";

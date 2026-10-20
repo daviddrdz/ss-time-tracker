@@ -1,0 +1,21 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Select from "@/components/ui/Select.astro"
+import { MAX_DAYS_PER_WEEK } from "@/config/defaults";
+
+type Props = HTMLAttributes<"select">;
+
+const props = Astro.props;
+const days = Array.from({ length: MAX_DAYS_PER_WEEK }, (_, i) => i + 1);
+---
+
+<Select {...props}>
+    {
+        days.map((day) => (
+            <option value={day}>
+                {day} {day === 1 ? "día" : "días"}
+            </option>
+        ))
+    }
+</Select>
+

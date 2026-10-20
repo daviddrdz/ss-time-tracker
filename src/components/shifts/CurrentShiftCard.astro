@@ -1,4 +1,7 @@
 ---
+import Field from "@/components/ui/Field.astro";
+import HoursSelect from "@/components/ui/HoursSelect.astro";
+import Button from "@/components/ui/Button.astro";
 ---
 
 <section class="mt-4">
@@ -8,22 +11,9 @@
 
         <div class="grid grid-cols-2 gap-4">
 
-            <div class="flex flex-col gap-2">
-                <label for="shift-hours-select" class="text-sm text-zinc-400">Horas de jornada</label>
-                <select
-                    id="shift-hours-select"
-                    class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 
-                            text-white outline-none focus:border-zinc-500"
-                >
-                    {
-                        Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
-                            <option value={num}>
-                                {num} {num === 1 ? 'hora' : 'horas'}
-                            </option>
-                        ))
-                    }
-                </select>
-            </div>
+            <Field label="Horas de jornada" labelFor="shift-hours-select">
+                <HoursSelect id="shift-hours-select" />
+            </Field>
 
             <div class="flex flex-col gap-2">
                 <span class="text-sm text-zinc-400">Tiempo restante</span>
@@ -44,13 +34,7 @@
             </span>
         </div>
 
-        <button
-            id="register-button"
-            class="w-full rounded-lg bg-white px-4 py-2 font-medium text-zinc-900 hover:bg-zinc-200"
-        >
-            Registrar entrada
-        </button>
-
+        <Button id="register-button" class="w-full">Registrar entrada</Button>
     </div>
 
 </section>

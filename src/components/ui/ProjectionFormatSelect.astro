@@ -1,0 +1,15 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Select from "@/components/ui/Select.astro";
+
+type Props = HTMLAttributes<"select">;
+
+const props = Astro.props;
+---
+
+<Select {...props}>
+    <option value="detailed">Todo junto (Meses, Semanas, Días)</option>
+    <option value="days">Solo días</option>
+    <option value="weeks">Solo semanas</option>
+    <option value="months">Solo meses</option>
+</Select>

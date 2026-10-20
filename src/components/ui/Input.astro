@@ -1,0 +1,15 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Props = HTMLAttributes<"input">;
+
+const { class: className, ...rest } = Astro.props;
+---
+
+<input 
+    class:list={[
+        "h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white outline-none focus:border-zinc-500 [color-scheme:dark]",
+        className,
+    ]}
+    {...rest}
+>

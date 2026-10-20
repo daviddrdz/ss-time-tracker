@@ -1,4 +1,8 @@
 ---
+import Field from "@/components/ui/Field.astro";
+import HoursSelect from "@/components/ui/HoursSelect.astro";
+import ProjectionFormatSelect from "@/components/ui/ProjectionFormatSelect.astro";
+import DaysSelect from "@/components/ui/DaysSelect.astro";
 ---
 
 <section class="mt-4">
@@ -36,34 +40,18 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-            <div class="flex flex-col gap-2">
-                <label for="hours-per-day-select" class="text-sm text-zinc-400">Horas/día</label>
-                <select id="hours-per-day-select" class="h-10 rounded-lg border border-zinc-700 bg-zinc-800 px-2 text-sm text-white outline-none focus:border-zinc-500">
-                    {Array.from({ length: 8 }, (_, i) => i + 1).map(num => (
-                        <option value={num}>{num} hrs</option>
-                    ))}
-                </select>
-            </div>
-            
-            <div class="flex flex-col gap-2">
-                <label for="days-per-week-select" class="text-sm text-zinc-400">Días/semana</label>
-                <select id="days-per-week-select" class="h-10 rounded-lg border border-zinc-700 bg-zinc-800 px-2 text-sm text-white outline-none focus:border-zinc-500">
-                    {Array.from({ length: 7 }, (_, i) => i + 1).map(num => (
-                        <option value={num}>{num} días</option>
-                    ))}
-                </select>
-            </div>
+            <Field label="Horas/día" labelFor="hours-per-day-select">
+                <HoursSelect id="hours-per-day-select" />
+            </Field>
+
+            <Field label="Días/semana" labelFor="days-per-week-select">
+                <DaysSelect id="days-per-week-select" />
+            </Field>
         </div>
 
-        <div class="flex flex-col gap-2">
-            <label for="projection-format-select" class="text-sm text-zinc-400">Formato de vista</label>
-            <select id="projection-format-select" class="h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 text-sm text-white outline-none focus:border-zinc-500">
-                <option value="detailed">Todo junto (Meses, Semanas, Días)</option>
-                <option value="days">Solo días</option>
-                <option value="weeks">Solo semanas</option>
-                <option value="months">Solo meses</option>
-            </select>
-        </div>
+        <Field label="Formato de vista" labelFor="projection-format-select">
+            <ProjectionFormatSelect id="projection-format-select" />
+        </Field>
 
         <div class="rounded-lg border border-zinc-800 bg-zinc-950/50 p-4 text-center">
             <span id="projection-result-display" class="text-2xl font-bold text-white">--</span>
@@ -115,7 +103,7 @@
             projectionResultDisplay.textContent = "¡Servicio terminado!";
             return;
         }
-        
+
         projectionResultDisplay.textContent = formatProjection(
             remaining,
             Number(hoursPerDaySelect.value),
