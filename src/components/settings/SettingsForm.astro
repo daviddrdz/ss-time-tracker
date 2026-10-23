@@ -52,21 +52,21 @@ import HoursSelect from "@/components/ui/HoursSelect.astro";
 
     const fillForm = () => {
         const settings = getSettings();
-        totalHoursInput.value = String(settings.TOTAL_HRS);
-        initialHoursInput.value = String(settings.INIT_HRS);
-        minMinutesToRoundHourInput.value = String(settings.MIN_FOR_HR);
-        defaultShiftHoursSelect.value = String(settings.SHIFT_HRS);
-        daysPerWeekSelect.value = String(settings.DAYS_PER_WEEK);
+        totalHoursInput.value = String(settings.totalHours);
+        initialHoursInput.value = String(settings.initialHours);
+        minMinutesToRoundHourInput.value = String(settings.minMinutesToRound);
+        defaultShiftHoursSelect.value = String(settings.defaultShiftHours);
+        daysPerWeekSelect.value = String(settings.daysPerWeek);
     };
 
     fillForm();
     saveSettingsButton.addEventListener("click", () => {
         saveSettings({
-            TOTAL_HRS: Number(totalHoursInput.value),
-            INIT_HRS: Number(initialHoursInput.value),
-            MIN_FOR_HR: Number(minMinutesToRoundHourInput.value),
-            SHIFT_HRS: Number(defaultShiftHoursSelect.value),
-            DAYS_PER_WEEK: Number(daysPerWeekSelect.value)
+            totalHours: Number(totalHoursInput.value),
+            initialHours: Number(initialHoursInput.value),
+            minMinutesToRound: Number(minMinutesToRoundHourInput.value),
+            defaultShiftHours: Number(defaultShiftHoursSelect.value),
+            daysPerWeek: Number(daysPerWeekSelect.value)
         });
 
         saveSettingsButton.textContent = "¡Ajustes guardados!";

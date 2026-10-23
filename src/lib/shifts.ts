@@ -3,8 +3,8 @@ import { getSettings } from "@/config/settings";
 import { loadShifts } from "@/lib/storage";
 
 interface Duration {
-    hrs: number;
-    min: number;
+    hours: number;
+    minutes: number;
 };
 
 export const getActiveShift = (shifts: Shift[]): Shift | undefined => {
@@ -19,8 +19,8 @@ export const getDuration = (start: string, end: string): Duration => {
     if (duration < 0) duration += 24 * 60;
 
     return {
-        hrs: Math.floor(duration / 60),
-        min: duration % 60,
+        hours: Math.floor(duration / 60),
+        minutes: duration % 60,
     };
 };
 
@@ -31,18 +31,18 @@ export const getTotalHours = (): number => {
     for (const shift of loadShifts()) {
         if(!shift.end) continue;
         const duration = getDuration(shift.start, shift.end);
-        total += duration.hrs;
-        if (duration.min >= settings.MIN_FOR_HR) total++;
+        total += duration.hours;
+        if (duration.minutes >= settings.minMinutesToRound) total++;
     }
 
-    return settings.INIT_HRS + total;
+    return settings.initialHours + total;
 };
 
 export const getClockOutTime = (start: string, shiftHours: number): string => {
     const settings = getSettings();
     const [h, m] = start.split(":").map(Number);
 
-    const minutes = ((h * 60) + m) + ((shiftHours - 1) * 60) + settings.MIN_FOR_HR;
+    const minutes = ((h * 60) + m) + ((shiftHours - 1) * 60) + settings.minMinutesToRound;
     const hours = (Math.floor(minutes / 60)) % 24;
     const mins = minutes % 60;
 

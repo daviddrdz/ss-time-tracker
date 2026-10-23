@@ -6,7 +6,7 @@ import { $ } from "@/lib/dom";
 const formatShiftDate = (date: string): string => {
     const [year, month, day] = date.split("-").map(Number);
 
-    return new Intl.DateTimeFormat("en-GB", {
+    return new Intl.DateTimeFormat("es-MX", {
         day: "2-digit",
         month: "short",
     }).format(new Date(year, month - 1, day));
@@ -33,7 +33,7 @@ export const initShiftHistory = (): void => {
         $("[data-field='date']", row).textContent = formatShiftDate(shift.date);
         $("[data-field='range']", row).textContent = `${shift.start} - ${shift.end ?? "En curso"}`;
         $("[data-field='duration']", row).textContent = duration
-            ? `${duration.hrs}h ${duration.min}m`
+            ? `${duration.hours}h ${duration.minutes}m`
             : "Activo";
 
         return row;

@@ -43,7 +43,7 @@ import HoursSelect from "@/components/ui/HoursSelect.astro";
     const clockOutDisplay = $<HTMLSpanElement>("#clock-out-display");
     const calculateClockOutButton = $<HTMLButtonElement>("#calculate-clock-out-button");
 
-    shiftHoursSelect.value = String(getSettings().SHIFT_HRS);
+    shiftHoursSelect.value = String(getSettings().defaultShiftHours);
 
     calculateClockOutButton.addEventListener("click", () => {
         const startTime = startTimeInput.value;

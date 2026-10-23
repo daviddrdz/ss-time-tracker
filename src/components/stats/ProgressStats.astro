@@ -81,8 +81,8 @@ import DaysSelect from "@/components/ui/DaysSelect.astro";
     const savePreferences = () => {
         saveSettings({
             ...getSettings(),
-            SHIFT_HRS: Number(hoursPerDaySelect.value),
-            DAYS_PER_WEEK: Number(daysPerWeekSelect.value),
+            defaultShiftHours: Number(hoursPerDaySelect.value),
+            daysPerWeek: Number(daysPerWeekSelect.value),
         });
     };
 
@@ -90,12 +90,12 @@ import DaysSelect from "@/components/ui/DaysSelect.astro";
     const updateUI = () => {
         const settings = getSettings();
         const completed = getTotalHours();
-        const remaining = Math.max(0, settings.TOTAL_HRS - completed);
-        const percentage = Math.min((completed / settings.TOTAL_HRS) * 100, 100);
+        const remaining = Math.max(0, settings.totalHours - completed);
+        const percentage = Math.min((completed / settings.totalHours) * 100, 100);
 
         completedHoursDisplay.textContent = completed + "h";
         remainingHoursDisplay.textContent = remaining + "h";
-        goalHoursDisplay.textContent = `Meta: ${settings.TOTAL_HRS}h`;
+        goalHoursDisplay.textContent = `Meta: ${settings.totalHours}h`;
         progressBar.style.width = `${percentage}%`;
         progressPercentageDisplay.textContent = `${percentage.toFixed(2)}%`;
 
@@ -113,8 +113,8 @@ import DaysSelect from "@/components/ui/DaysSelect.astro";
     }
 
     const initialSettings = getSettings();
-    hoursPerDaySelect.value = String(initialSettings.SHIFT_HRS);
-    daysPerWeekSelect.value = String(initialSettings.DAYS_PER_WEEK);
+    hoursPerDaySelect.value = String(initialSettings.defaultShiftHours);
+    daysPerWeekSelect.value = String(initialSettings.daysPerWeek);
     updateUI();
 
     window.addEventListener(SHIFT_UPDATED_EVENT, updateUI);

@@ -1,7 +1,7 @@
 export interface Settings {
-    TOTAL_HRS: number;
-    INIT_HRS: number;
-    MIN_FOR_HR: number;
-    SHIFT_HRS: number;
-    DAYS_PER_WEEK: number;
-};
+    totalHours: number;
+    initialHours: number;
+    minMinutesToRound: number;
+    defaultShiftHours: number;
+    daysPerWeek: number;
+}
